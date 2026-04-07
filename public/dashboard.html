@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .chessboard-bg {
+    background-color: #ecfdf5; /* very light green */
+    background-image:
+      linear-gradient(45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%);
+    background-size: 56px 56px;
+    background-position: 0 0, 0 28px, 28px -28px, -28px 0px;
+  }
+
+  .card-hover {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(29, 38, 59, 0.1);
+  }
+</style>
+</head>
+<body class="chessboard-bg font-sans text-gray-900">
+
+<div class="flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-72 bg-[#166534] text-white flex flex-col p-6 shadow-xl">
+    <div class="flex items-center gap-3 mb-8">
+      <div class="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">♟</div>
+      <div>
+        <div class="text-lg font-extrabold leading-tight">Academy Admin</div>
+        <div class="text-xs text-white/70">Strategy • Discipline • Growth</div>
+      </div>
+    </div>
+
+    <nav class="flex-1 space-y-1">
+      <a href="dashboard.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 transition">
+        <span class="text-lg">♜</span>
+        <span class="font-semibold">Dashboard</span>
+      </a>
+      <a href="coaches.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♞</span>
+        <span class="font-medium">Manage Coaches</span>
+      </a>
+      <a href="students.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♙</span>
+        <span class="font-medium">Manage Students</span>
+      </a>
+      <a href="fees.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♛</span>
+        <span class="font-medium">Fees Collection</span>
+      </a>
+      <a href="atttendaancee.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♝</span>
+        <span class="font-medium">Attendance</span>
+      </a>
+      <a href="whatsapp.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♚</span>
+        <span class="font-medium">WhatsApp Reminder</span>
+      </a>
+      <a href="payroll.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♖</span>
+        <span class="font-medium">Payroll</span>
+      </a>
+      <a href="reports.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♗</span>
+        <span class="font-medium">Reports</span>
+      </a>
+      <a href="settings.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♘</span>
+        <span class="font-medium">Settings</span>
+      </a>
+    </nav>
+
+    <button onclick="logout()" class="mt-6 w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 py-2.5 px-4 rounded-xl transition">
+      <span class="text-base">⟵</span>
+      <span class="font-semibold">Logout</span>
+    </button>
+  </aside>
+
+
+  <div class="flex-1 flex flex-col">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-10 bg-white/80 backdrop-blur border-b border-emerald-100">
+      <div class="px-6 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <img src="images/logo.jpg" class="w-12 h-12 rounded-xl object-cover ring-1 ring-emerald-100" alt="Logo">
+          <div>
+            <h1 class="text-xl md:text-2xl font-extrabold text-[#166534] tracking-tight">
+              Gurukul Chess Academy Admin Panel
+            </h1>
+            <p class="text-xs md:text-sm text-gray-600 flex items-center gap-2">
+              <span class="text-[#166534]">♟</span>
+              Intelligence • Strategy • Professional Management
+              <span class="text-[#166534]">♞</span>
+            </p>
+          </div>
+        </div>
+
+        
+    </header>
+
+    <!-- Dashboard -->
+    <main class="p-6 lg:p-8 flex-1">
+
+      <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">Dashboard</h2>
+          <p class="text-sm text-gray-600 mt-1">
+            A strategic overview of coaches, students, and academy finances.
+          </p>
+        </div>
+
+        
+      </div>
+
+      <!-- Stats cards -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+        <div class="card-hover bg-white/90 border border-emerald-100 p-5 rounded-2xl shadow-sm">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-gray-600">Total Coaches</p>
+              <p id="totalCoaches" class="text-3xl font-extrabold text-gray-900 mt-1">0</p>
+            </div>
+            <div class="h-11 w-11 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#166534] text-xl">♞</div>
+          </div>
+          <div class="mt-4 text-xs text-gray-500">Keep training quality consistent.</div>
+        </div>
+
+        <div class="card-hover bg-white/90 border border-emerald-100 p-5 rounded-2xl shadow-sm">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-gray-600">Total Students</p>
+              <p id="totalStudents" class="text-3xl font-extrabold text-gray-900 mt-1">0</p>
+            </div>
+            <div class="h-11 w-11 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#166534] text-xl">♟</div>
+          </div>
+          <div class="mt-4 text-xs text-gray-500">Current + Passed combined.</div>
+        </div>
+
+        <div class="card-hover bg-white/90 border border-emerald-100 p-5 rounded-2xl shadow-sm">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-gray-600">Current Students</p>
+              <p id="currentStudents" class="text-3xl font-extrabold text-gray-900 mt-1">0</p>
+            </div>
+            <div class="h-11 w-11 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#166534] text-xl">♜</div>
+          </div>
+          <div class="mt-4 text-xs text-gray-500">Active learners in progress.</div>
+        </div>
+
+        <div class="card-hover bg-white/90 border border-emerald-100 p-5 rounded-2xl shadow-sm">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-gray-600">Passed Students</p>
+              <p id="passedStudents" class="text-3xl font-extrabold text-gray-900 mt-1">0</p>
+            </div>
+            <div class="h-11 w-11 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#166534] text-xl">♝</div>
+          </div>
+          <div class="mt-4 text-xs text-gray-500">Successful completions.</div>
+        </div>
+
+        <div class="card-hover bg-white/90 border border-emerald-100 p-5 rounded-2xl shadow-sm">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-gray-600">Monthly Income</p>
+              <p id="monthlyIncome" class="text-3xl font-extrabold text-gray-900 mt-1">₹0</p>
+            </div>
+            <div class="h-11 w-11 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#166534] text-xl">♛</div>
+          </div>
+          <div class="mt-4 text-xs text-gray-500">Collected fees summary.</div>
+        </div>
+
+        <div class="card-hover bg-white/90 border border-emerald-100 p-5 rounded-2xl shadow-sm">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-gray-600">Monthly Expenses</p>
+              <p id="monthlyExpenses" class="text-3xl font-extrabold text-gray-900 mt-1">₹0</p>
+            </div>
+            <div class="h-11 w-11 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#166534] text-xl">♚</div>
+          </div>
+          <div class="mt-4 text-xs text-gray-500">Payroll & operations.</div>
+        </div>
+
+        <div class="card-hover bg-white/90 border border-emerald-100 p-5 rounded-2xl shadow-sm sm:col-span-2 xl:col-span-2">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm text-gray-600">Unpaid Fees</p>
+              <p id="unpaidDues" class="text-3xl font-extrabold text-gray-900 mt-1">₹0</p>
+            </div>
+            <div class="h-11 w-11 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#166534] text-xl">♖</div>
+          </div>
+          <div class="mt-4 text-xs text-gray-500">Outstanding dues to follow up.</div>
+        </div>
+      </section>
+
+      
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+</div>
+
+<script>
+
+async function loadDashboard() {
+
+  try {
+
+    const res = await fetch("http://localhost:5000/api/dashboard");
+    const data = await res.json();
+
+    document.getElementById("totalCoaches").innerText = data.totalCoaches ?? 0;
+    document.getElementById("totalStudents").innerText = data.totalStudents ?? 0;
+    document.getElementById("currentStudents").innerText = data.currentStudents ?? 0;
+    document.getElementById("passedStudents").innerText = data.passedStudents ?? 0;
+    document.getElementById("monthlyIncome").innerText = `₹${data.monthlyIncome ?? 0}`;
+    document.getElementById("monthlyExpenses").innerText = `₹${data.monthlyExpenses ?? 0}`;
+    document.getElementById("unpaidDues").innerText = `₹${data.unpaidDues ?? 0}`;
+
+  } catch (err) {
+
+    console.error("Failed to load dashboard:", err);
+
+  }
+
+}
+
+window.onload = loadDashboard;
+
+function logout() {
+
+  if (confirm("Are you sure you want to logout?")) {
+    window.location.href = "admin-login.html";
+  }
+
+}
+
+</script>
+
+</body>
+</html>

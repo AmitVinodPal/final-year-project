@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fees Collection</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+.chessboard-bg{
+background-color:#ecfdf5;
+
+background-image:
+linear-gradient(45deg,rgba(22,101,52,0.06) 25%,transparent 25%),
+linear-gradient(-45deg,rgba(22,101,52,0.06) 25%,transparent 25%),
+linear-gradient(45deg,transparent 75%,rgba(22,101,52,0.06) 75%),
+linear-gradient(-45deg,transparent 75%,rgba(22,101,52,0.06) 75%);
+
+background-size:56px 56px;
+background-position:0 0,0 28px,28px -28px,-28px 0;
+}
+
+.card-hover{
+transition:transform .18s ease,box-shadow .18s ease;
+}
+
+.card-hover:hover{
+transform:translateY(-2px);
+box-shadow:0 16px 30px rgba(29,38,59,.1);
+}
+
+</style>
+</head>
+
+<body class="chessboard-bg font-sans text-gray-900">
+
+<div class="flex min-h-screen">
+
+<!-- SIDEBAR -->
+
+<aside class="w-72 bg-[#166534] text-white flex flex-col p-6 shadow-xl">
+
+<div class="flex items-center gap-3 mb-8">
+
+<div class="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">♟</div>
+
+<div>
+<div class="text-lg font-extrabold">Academy Admin</div>
+<div class="text-xs text-white/70">Strategy • Discipline • Growth</div>
+</div>
+
+</div>
+
+<nav class="flex-1 space-y-1">
+
+<a href="dashboard.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+<span>♜</span> Dashboard
+</a>
+
+<a href="coaches.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+<span>♞</span> Manage Coaches
+</a>
+
+<a href="students.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+<span>♙</span> Manage Students
+</a>
+
+<a href="fees.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl bg-white/10">
+<span>♛</span> Fees Collection
+</a>
+
+<a href="Aattendance.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+<span>♝</span> Attendance
+</a>
+
+<a href="whatsapp.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+<span>♚</span> WhatsApp Reminder
+</a>
+
+<a href="payroll.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+<span>♖</span> Payroll
+</a>
+
+<a href="reports.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+<span>♗</span> Reports
+</a>
+
+<a href="settings.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+<span>♘</span> Settings
+</a>
+
+</nav>
+
+<button onclick="logout()" class="mt-6 w-full bg-white/10 hover:bg-white/20 py-2.5 rounded-xl">
+Logout
+</button>
+
+</aside>
+
+
+<!-- MAIN CONTENT -->
+
+<div class="flex-1 flex flex-col">
+
+<header class="bg-white/80 backdrop-blur border-b border-emerald-100 px-6 py-4">
+
+<div class="flex items-center gap-4">
+
+<img src="images/logo.jpg" class="w-12 h-12 rounded-xl">
+
+<div>
+
+<h1 class="text-xl font-bold text-[#166534]">
+Gurukul Chess Academy Admin Panel
+</h1>
+
+<p class="text-sm text-gray-600">
+♟ Intelligence • Strategy • Professional Management
+</p>
+
+</div>
+
+</div>
+
+</header>
+
+
+<main class="p-8">
+
+<h2 class="text-3xl font-bold mb-6">Fees Collection</h2>
+
+
+<!-- FORM -->
+
+<div class="card-hover bg-white rounded-2xl shadow-sm border border-emerald-100 p-6 mb-8">
+
+<h3 class="text-lg font-semibold mb-4">Collect Fees</h3>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+
+<select id="branchSelect" class="border p-3 rounded-lg">
+
+<option value="">Select Branch</option>
+
+<option value="Andheri">Bombay Cambridge, Andheri West</option>
+<option value="Jogeshwari">Jogeshwari Education Society</option>
+<option value="Dadar">Sane Guruji High School</option>
+<option value="Vileparle">Vileparle Mahila Sangh</option>
+
+</select>
+
+
+<select id="studentSelect" class="border p-3 rounded-lg">
+<option value="">Select Student</option>
+</select>
+
+
+<input type="date" id="feeDate" class="border p-3 rounded-lg">
+
+
+<input type="number" id="totalFee"
+class="border p-3 rounded-lg bg-gray-100"
+placeholder="Total Fee"
+readonly>
+
+
+<input type="number" id="paidAmount"
+class="border p-3 rounded-lg"
+placeholder="Paid Amount">
+
+
+<select id="paymentMode" class="border p-3 rounded-lg">
+
+<option value="">Payment Mode</option>
+<option>Cash</option>
+<option>UPI</option>
+
+</select>
+
+</div>
+
+<button id="saveFeeBtn"
+class="bg-[#166534] text-white px-6 py-2.5 rounded-xl hover:bg-[#14502a]">
+Save Fee
+</button>
+
+</div>
+
+
+<!-- TABLE -->
+
+<div class="card-hover bg-white rounded-2xl shadow-sm border border-emerald-100 p-6">
+
+<h3 class="text-lg font-semibold mb-4">Fees Records</h3>
+
+<div class="overflow-x-auto">
+
+<table class="w-full border" id="feesTable">
+
+<thead class="bg-emerald-50">
+
+<tr>
+
+<th class="p-3 text-left">Student</th>
+<th class="p-3 text-left">Date</th>
+<th class="p-3 text-left">Total</th>
+<th class="p-3 text-left">Paid</th>
+<th class="p-3 text-left">Due</th>
+<th class="p-3 text-left">Status</th>
+<th class="p-3 text-left">Action</th>
+
+</tr>
+
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</main>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* ELEMENTS */
+
+const branchSelect=document.querySelector("#branchSelect");
+const studentSelect=document.querySelector("#studentSelect");
+const feeDate=document.querySelector("#feeDate");
+const totalFeeInput=document.querySelector("#totalFee");
+const paidAmountInput=document.querySelector("#paidAmount");
+const paymentModeSelect=document.querySelector("#paymentMode");
+const saveFeeBtn=document.querySelector("#saveFeeBtn");
+const feesTableBody=document.querySelector("#feesTable tbody");
+
+
+/* FEE BY BRANCH */
+
+const FEE_BY_BRANCH={
+"Andheri":1500,
+"Jogeshwari":1500,
+"Dadar":1800,
+"Vileparle":2200
+};
+
+function updateTotalFeeByBranch(){
+
+const branch=branchSelect.value;
+
+if(branch && FEE_BY_BRANCH.hasOwnProperty(branch)){
+totalFeeInput.value=FEE_BY_BRANCH[branch];
+}else{
+totalFeeInput.value="";
+}
+
+}
+
+
+/* LOAD STUDENTS */
+
+branchSelect.addEventListener("change",async()=>{
+
+const branch=branchSelect.value;
+
+studentSelect.innerHTML='<option value="">Select Student</option>';
+
+updateTotalFeeByBranch();
+
+if(!branch)return;
+
+try{
+
+const res=await fetch(`/api/students?branch=${encodeURIComponent(branch)}`);
+
+const data=await res.json();
+
+data.students.forEach(student=>{
+
+const opt=document.createElement("option");
+opt.value=student._id;
+opt.textContent=student.name;
+
+studentSelect.appendChild(opt);
+
+});
+
+}catch(err){
+
+alert("Failed to load students");
+
+}
+
+});
+
+
+/* SAVE FEES */
+
+saveFeeBtn.addEventListener("click",async()=>{
+
+const branch=branchSelect.value;
+const studentId=studentSelect.value;
+const feeDateVal=feeDate.value;
+const totalFee=Number(totalFeeInput.value);
+const paidAmount=Number(paidAmountInput.value);
+const paymentMode=paymentModeSelect.value;
+
+if(!branch || !studentId || !feeDateVal){
+alert("Please fill all fields");
+return;
+}
+
+/* VALIDATION */
+
+if(paidAmount > totalFee){
+alert("Paid amount cannot be greater than Total Fee");
+return;
+}
+
+try{
+
+const res=await fetch("/api/fees/save",{
+
+method:"POST",
+
+headers:{'Content-Type':'application/json'},
+
+body:JSON.stringify({
+
+studentId,
+branch,
+feeDate:feeDateVal,
+totalFee,
+paidAmount,
+paymentMode
+
+})
+
+});
+
+if(res.ok){
+
+alert("Fee saved");
+
+resetForm();
+loadFees();
+
+}
+
+}catch(err){
+
+alert("Server error");
+
+}
+
+});
+
+
+/* LOAD FEES */
+
+async function loadFees(){
+
+const res=await fetch("/api/fees");
+const data=await res.json();
+
+feesTableBody.innerHTML="";
+
+data.fees.forEach(fee=>{
+
+const row=document.createElement("tr");
+
+row.innerHTML=`
+
+<td class="p-3">${fee.studentId?.name || "-"}</td>
+<td class="p-3">${fee.feeDate}</td>
+<td class="p-3">₹${fee.totalFee}</td>
+<td class="p-3">₹${fee.paidAmount}</td>
+<td class="p-3">₹${fee.dueAmount}</td>
+
+<td class="p-3 font-semibold ${
+fee.status==="Paid"
+?"text-green-600"
+:fee.status==="Partial"
+?"text-orange-600"
+:"text-red-600"
+}">${fee.status}</td>
+
+<td class="p-3">
+
+<button onclick="deleteFee('${fee._id}')"
+class="text-red-600 font-semibold">
+
+Delete
+
+</button>
+
+</td>
+
+`;
+
+feesTableBody.appendChild(row);
+
+});
+
+}
+
+
+function deleteFee(id){
+
+if(!confirm("Delete this fee?"))return;
+
+fetch(`/api/fees/${id}`,{method:"DELETE"})
+.then(()=>loadFees());
+
+}
+
+
+function resetForm(){
+
+branchSelect.value="";
+studentSelect.innerHTML='<option value="">Select Student</option>';
+feeDate.value="";
+totalFeeInput.value="";
+paidAmountInput.value="";
+paymentModeSelect.value="";
+
+}
+
+
+loadFees();
+
+
+function logout(){
+
+if(confirm("Logout?")){
+window.location.href="admin-login.html";
+}
+
+}
+
+</script>
+
+</body>
+</html>

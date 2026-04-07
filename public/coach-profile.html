@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .chessboard-bg {
+      background-color: #ecfdf5;
+      background-image:
+        linear-gradient(45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%);
+      background-size: 56px 56px;
+      background-position: 0 0, 0 28px, 28px -28px, -28px 0px;
+    }
+
+    .card-hover {
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 30px rgba(29, 38, 59, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-100 flex">
+
+  <aside class="w-64 bg-green-700 text-white min-h-screen p-5 space-y-4">
+    <h2 class="text-2xl font-bold">Coach Panel</h2>
+    <nav class="space-y-1">
+      <a href="coach-dashboard.html" class="block p-2 rounded hover:bg-green-600">Dashboard</a>
+    
+      <a href="coach-sessions.html" class="block p-2 rounded hover:bg-green-600">My Sessions</a>
+      <a href="branch-selection.html" class="block p-2 rounded hover:bg-green-600">Attendance</a>
+      <a href="coach-payslips.html" class="block p-2 rounded hover:bg-green-600">Payslips</a>
+      <a href="coach-profile.html" class="block p-2 rounded bg-green-600">Profile</a>
+    </nav>
+    <button class="mt-6 w-full bg-red-500 py-2 rounded hover:bg-red-600">Logout</button>
+  </aside>
+
+  <main class="flex-1 p-8">
+    <h1 class="text-3xl font-bold mb-6">Profile Settings</h1>
+
+    <form class="bg-white p-6 rounded shadow max-w-xl space-y-4">
+      <input type="text" placeholder="Coach Name" class="w-full border p-3 rounded" />
+      <input type="email" placeholder="Email" class="w-full border p-3 rounded" />
+       <input type="email" placeholder="Phone NOs" class="w-full border p-3 rounded" />
+      <input type="password" placeholder="New Password" class="w-full border p-3 rounded" />
+      <button class="bg-green-600 w-full text-white py-3 rounded hover:bg-green-700">Update Profile</button>
+    </form>
+  </main>
+
+</body>
+</html>

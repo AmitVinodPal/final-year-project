@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance Marking</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+.chessboard-bg {
+  background-color: #ecfdf5; /* very light green */
+  background-image:
+    linear-gradient(45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%);
+  background-size: 56px 56px;
+  background-position: 0 0, 0 28px, 28px -28px, -28px 0px;
+}
+
+.card-hover {
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(29, 38, 59, 0.1);
+}
+
+.toggle-switch {
+  position: relative;
+  width: 55px;
+  height: 28px;
+  background: #e5e7eb;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+.toggle-switch.active {
+  background: linear-gradient(45deg, #4ade80, #22c55e);
+}
+.toggle-dot {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+.toggle-switch.active .toggle-dot {
+  transform: translateX(27px);
+}
+</style>
+</head>
+
+<body class="chessboard-bg font-sans text-gray-900">
+
+<!-- ================= SCRIPT ================= -->
+<script>
+const params = new URLSearchParams(window.location.search);
+const branch = params.get("branch");
+
+const teacherId = localStorage.getItem("teacherId");
+
+
+
+let students = [];
+
+// Date
+const todayISO = new Date().toISOString().split("T")[0];
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("todayDate").innerText = todayISO;
+  document.getElementById("branchName").innerText = branch + " Attendance";
+  loadStudents();
+});
+
+// Back
+function goBack() {
+  window.location.href = `selection.html?branch=${encodeURIComponent(branch)}`;
+}
+
+// Load students
+async function loadStudents() {
+  try {
+ 
+const res = await fetch(`/api/students?branch=${encodeURIComponent(branch)}`);
+
+
+    const data = await res.json();
+
+    students = data.students;
+    const container = document.getElementById("studentList");
+    container.innerHTML = "";
+
+    students.forEach(s => {
+      const row = document.createElement("div");
+      row.className =
+        "flex justify-between items-center p-3 border rounded bg-gray-50";
+
+      const name = document.createElement("span");
+      name.textContent = s.name;
+      name.className = "font-semibold text-gray-800";
+
+      const right = document.createElement("div");
+      right.className = "flex items-center gap-3";
+
+      const status = document.createElement("span");
+      status.textContent = "Absent";
+      status.className = "text-red-500 font-semibold";
+
+      const toggle = document.createElement("div");
+      toggle.className = "toggle-switch";
+      toggle.dataset.status = "Absent";
+
+      const dot = document.createElement("div");
+      dot.className = "toggle-dot";
+      toggle.appendChild(dot);
+
+      toggle.onclick = () => {
+        const present = toggle.dataset.status === "Absent";
+        toggle.dataset.status = present ? "Present" : "Absent";
+        toggle.classList.toggle("active");
+        status.textContent = present ? "Present" : "Absent";
+        status.className = present
+          ? "text-green-600 font-semibold"
+          : "text-red-500 font-semibold";
+      };
+
+      right.append(status, toggle);
+      row.append(name, right);
+      container.appendChild(row);
+
+      s.toggleBtn = toggle;
+    });
+
+  } catch (err) {
+    alert("Failed to load students");
+  }
+}
+
+
+
+
+// Save Attendance
+async function saveAttendance() {
+  const records = students.map(s => ({
+    studentId: s._id,
+    name: s.name,
+    status: s.toggleBtn.dataset.status
+  }));
+
+  const res = await fetch("/api/attendance/save", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ date: todayISO, branch, records })
+  });
+
+  const data = await res.json();
+  alert(data.success ? "Attendance Saved " : "Error saving attendance");
+}
+
+
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  // RESET ALL PRESENT
+  document.getElementById("resetAll").addEventListener("click", () => {
+    students.forEach(s => {
+      s.toggleBtn.dataset.status = "Present";
+      s.toggleBtn.classList.add("active");
+
+      const statusText = s.toggleBtn.parentElement.querySelector("span");
+      statusText.textContent = "Present";
+      statusText.className = "text-green-600 font-semibold";
+    });
+  });
+
+  // SEARCH STUDENT
+  document.getElementById("searchInput").addEventListener("input", (e) => {
+    const query = e.target.value.toLowerCase();
+
+    document.querySelectorAll("#studentList > div").forEach(row => {
+      const name = row.querySelector("span").textContent.toLowerCase();
+      row.style.display = name.includes(query) ? "flex" : "none";
+    });
+  });
+
+  // EXPORT CSV
+  document.getElementById("exportCSV").addEventListener("click", () => {
+    const rows = [
+      ["Branch", branch],
+      ["Date", todayISO],
+      [],
+      ["Name", "Status"]
+    ];
+
+    students.forEach(s => {
+      rows.push([s.name, s.toggleBtn.dataset.status]);
+    });
+
+    const csv = rows.map(r => r.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${branch}_${todayISO}_attendance.csv`;
+    link.click();
+  });
+
+});
+</script>
+
+<!-- ================= HEADER ================= -->
+<div class="text-center mt-8">
+    <div class="flex justify-center items-center space-x-4">
+        <img src="images/logo.jpg" class="w-16 h-16" alt="Logo">
+        <h1 class="text-3xl font-extrabold text-green-900 tracking-wide">Gurukul Chess Academy ®</h1>
+    </div>
+
+    <p class="mt-2 text-sm font-semibold text-gray-700">EVERY CHESS MASTER WAS ONCE A BEGINNER</p>
+    <p class="text-xs text-gray-500">– IRVING CHERNEV</p>
+
+    <div class="flex items-center justify-center mt-4 w-full max-w-lg mx-auto">
+        <div class="flex-1 border-t border-gray-400"></div>
+        <span class="px-3 text-gray-600 text-sm">♟</span>
+        <div class="flex-1 border-t border-gray-400"></div>
+    </div>
+</div>
+<!-- ================= CARD ================= -->
+<div class="flex justify-center p-6">
+  <div class="bg-white rounded-2xl shadow-lg w-full max-w-xl p-6">
+
+    <div class="flex justify-between mb-4">
+      <h2 class="text-lg font-semibold text-green-700">
+        <span id="branchName"></span>
+      </h2>
+      <span id="todayDate" class="text-sm text-gray-500"></span>
+    </div>
+
+    <div class="flex gap-2 mb-4">
+      <button onclick="goBack()"
+        class="px-3 py-1 border rounded hover:bg-gray-100">
+        ← Back
+      </button>
+    
+
+
+<button id="resetAll" class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100">
+      ↻ Reset All Present
+    </button>
+    <input type="text" id="searchInput" placeholder="Search student..." 
+           class="ml-auto px-3 py-1 border rounded border-gray-300 w-40">
+  </div>
+
+
+
+
+
+   <div id="studentList" class="space-y-3 max-h-96 overflow-y-auto"></div>
+
+<!-- ACTION BUTTONS -->
+<div class="mt-4 flex gap-6">
+
+  <button
+    onclick="saveAttendance()"
+    class="flex-1 bg-green-700 text-white py-2 rounded-lg hover:bg-green-800
+           flex items-center justify-center gap-2">
+    <i class="fas fa-save"></i>
+    Save Attendance
+  </button>
+
+  <button
+    id="exportCSV"
+    class="flex-1 bg-white border border-gray-300 py-2 rounded-lg
+           hover:bg-gray-100 flex items-center justify-center gap-2">
+    <i class="fas fa-file-csv text-green-700"></i>
+    Export CSV
+  </button>
+
+</div>
+
+  </div>
+</div>
+
+</body>
+</html>

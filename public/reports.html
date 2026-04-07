@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Reports</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .chessboard-bg {
+    background-color: #ecfdf5; /* very light green */
+    background-image:
+      linear-gradient(45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%);
+    background-size: 56px 56px;
+    background-position: 0 0, 0 28px, 28px -28px, -28px 0px;
+  }
+
+  .card-hover {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(29, 38, 59, 0.1);
+  }
+</style>
+</head>
+<body class="chessboard-bg font-sans text-gray-900">
+
+<div class="flex min-h-screen">
+
+  <!-- SIDEBAR (shared admin theme) -->
+  <aside class="w-72 bg-[#166534] text-white flex flex-col p-6 shadow-xl">
+    <div class="flex items-center gap-3 mb-8">
+      <div class="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">♟</div>
+      <div>
+        <div class="text-lg font-extrabold leading-tight">Academy Admin</div>
+        <div class="text-xs text-white/70">Strategy • Discipline • Growth</div>
+      </div>
+    </div>
+
+    <nav class="flex-1 space-y-1">
+      <a href="dashboard.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♜</span><span class="font-medium">Dashboard</span>
+      </a>
+      <a href="coaches.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♞</span><span class="font-medium">Manage Coaches</span>
+      </a>
+      <a href="students.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♙</span><span class="font-medium">Manage Students</span>
+      </a>
+      <a href="fees.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♛</span><span class="font-medium">Fees Collection</span>
+      </a>
+      <a href="Aattendance.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♝</span><span class="font-medium">Attendance</span>
+      </a>
+      <a href="whatsapp.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♚</span><span class="font-medium">WhatsApp Reminder</span>
+      </a>
+      <a href="payroll.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♖</span><span class="font-medium">Payroll</span>
+      </a>
+      <a href="reports.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 transition">
+        <span class="text-lg">♗</span><span class="font-semibold">Reports</span>
+      </a>
+      <a href="settings.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♘</span><span class="font-medium">Settings</span>
+      </a>
+    </nav>
+
+    <button onclick="logout()"
+      class="mt-6 w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 py-2.5 px-4 rounded-xl transition">
+      <span class="text-base">⟵</span><span class="font-semibold">Logout</span>
+    </button>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col">
+    <header class="sticky top-0 z-10 bg-white/80 backdrop-blur border-b border-emerald-100">
+      <div class="px-6 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <img src="images/logo.jpg" class="w-12 h-12 rounded-xl object-cover ring-1 ring-emerald-100" alt="Logo">
+          <div>
+            <h1 class="text-xl md:text-2xl font-extrabold text-[#166534] tracking-tight">
+              Gurukul Chess Academy Admin Panel
+            </h1>
+            <p class="text-xs md:text-sm text-gray-600 flex items-center gap-2">
+              <span class="text-[#166534]">♟</span>
+              Intelligence • Strategy • Professional Management
+              <span class="text-[#166534]">♞</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="p-6 lg:p-8 flex-1">
+      <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Reports</h2>
+      <p class="text-sm text-gray-600 mb-6">
+        Analyse attendance, fees, coach payments, and monthly performance.
+      </p>
+
+      <!-- Tabs -->
+      <div class="flex gap-3 mb-6 flex-wrap">
+        <button onclick="showReport('attendance')" class="tab-btn">Attendance</button>
+        <button onclick="showReport('fees')" class="tab-btn">Fees</button>
+        <button onclick="showReport('coach')" class="tab-btn">Coach Payment</button>
+        <button onclick="showReport('monthly')" class="tab-btn">Monthly Summary</button>
+      </div>
+
+      <!-- Attendance Report -->
+      <section id="attendance" class="report hidden">
+        <div class="report-box">
+          <div class="flex justify-between mb-3">
+            <h3 class="title">Attendance Report</h3>
+            <button onclick="exportCSV('attendanceTable','attendance-report.csv')" class="export-btn">Export CSV</button>
+          </div>
+          <table id="attendanceTable" class="table">
+          </table>
+        </div>
+      </section>
+
+      <!-- Fees Report -->
+      <section id="fees" class="report hidden">
+        <div class="report-box">
+          <div class="flex justify-between mb-3">
+            <h3 class="title">Fees Collection Report</h3>
+            <button onclick="exportCSV('feesTable','fees-report.csv')" class="export-btn">Export CSV</button>
+          </div>
+          <table id="feesTable" class="table">
+          </table>
+        </div>
+      </section>
+
+      <!-- Coach Payment Report -->
+      <section id="coach" class="report hidden">
+        <div class="report-box">
+          <div class="flex justify-between mb-3">
+            <h3 class="title">Coach Payment Report</h3>
+            <button onclick="exportCSV('coachTable','coach-payment.csv')" class="export-btn">Export CSV</button>
+          </div>
+          <table id="coachTable" class="table">
+          </table>
+        </div>
+      </section>
+
+      <!-- Monthly Summary -->
+      <section id="monthly" class="report hidden">
+        <div class="report-box">
+          <div class="flex justify-between mb-3">
+            <h3 class="title">Monthly Summary</h3>
+            <button onclick="exportCSV('monthlyTable','monthly-summary.csv')" class="export-btn">Export CSV</button>
+          </div>
+          <table id="monthlyTable" class="table">
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+
+
+
+// ---------------- SHOW REPORT TAB ----------------
+function showReport(id) {
+  document.querySelectorAll('.report').forEach(r => r.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+// ---------------- FETCH ATTENDANCE ----------------
+async function loadAttendance() {
+  const res = await fetch('http://localhost:5000/api/reports/attendance');
+  const data = await res.json();
+
+  const table = document.querySelector('#attendanceTable');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Student Name</th>
+        <th>Branch</th>
+        <th>Present</th>
+        <th>Absent</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${data.map(item => `
+        <tr>
+          <td>${item.student_name}</td>
+          <td>${item.branch}</td>
+          <td>${item.present}</td>
+          <td>${item.absent}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+}
+
+// ---------------- FETCH FEES ----------------
+async function loadFees() {
+  const res = await fetch('http://localhost:5000/api/reports/fees');
+  const data = await res.json();
+
+  const table = document.querySelector('#feesTable');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Student Name</th>
+        <th>Branch</th>
+        <th>Date</th>
+        <th>Total</th>
+        <th>Paid</th>
+        <th>Due</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${data.map(item => `
+        <tr>
+          <td>${item.student_name}</td>
+          <td>${item.branch}</td>
+          <td>${item.date}</td>
+          <td>${item.total}</td>
+          <td>${item.paid}</td>
+          <td>${item.due}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+}
+
+// ---------------- FETCH COACH PAYMENT ----------------
+async function loadCoach() {
+  const res = await fetch('http://localhost:5000/api/reports/coach');
+  const data = await res.json();
+
+  const table = document.querySelector('#coachTable');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Coach Name</th>
+        <th>Branch</th>
+        <th>Month</th>
+        <th>Amount</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${data.map(item => `
+        <tr>
+          <td>${item.coach_name}</td>
+          <td>${item.branch}</td>
+          <td>${item.month}</td>
+          <td>${item.amount}</td>
+          <td>${item.status}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+}
+
+// ---------------- FETCH MONTHLY SUMMARY ----------------
+async function loadMonthly() {
+  const res = await fetch('http://localhost:5000/api/reports/monthly');
+  const data = await res.json();
+
+  const table = document.querySelector('#monthlyTable');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Total Students</th>
+        <th>Fees Collected</th>
+        <th>Pending Fees</th>
+        <th>Coach Payments</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>${data.total_students}</td>
+        <td>${data.fees_collected}</td>
+        <td>${data.pending_fees}</td>
+        <td>${data.coach_payments}</td>
+      </tr>
+    </tbody>
+  `;
+}
+
+// ---------------- LOAD ALL DATA ON PAGE LOAD ----------------
+document.addEventListener('DOMContentLoaded', () => {
+  loadAttendance();
+  loadFees();
+  loadCoach();
+  loadMonthly();
+});
+
+// ---------------- EXPORT CSV ----------------
+function exportCSV(tableId, filename) {
+  const rows = document.querySelectorAll(`#${tableId} tr`);
+
+  if (rows.length === 0) {
+    alert("No data available to export!");
+    return;
+  }
+
+  let csv = [];
+
+  rows.forEach(row => {
+    const cols = row.querySelectorAll('th, td');
+    const data = Array.from(cols).map(col => 
+      `"${col.innerText.replace(/"/g, '""')}"`
+    );
+    csv.push(data.join(','));
+  });
+
+  const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+}
+
+
+// ---------------- LOGOUT ----------------
+function logout() {
+  if(confirm('Are you sure you want to logout?')) {
+    window.location.href = 'admin-login.html';
+  }
+}
+
+
+</script>
+
+
+<style>
+.tab-btn { background:#16a34a;color:white;padding:8px 16px;border-radius:6px }
+.export-btn { background:#2563eb;color:white;padding:6px 14px;border-radius:6px }
+.report-box { background:white;padding:20px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1) }
+.table { width:100%;border-collapse:collapse }
+.table th,.table td { padding:10px;border-bottom:1px solid #e5e7eb }
+.title { font-size:1.2rem;font-weight:600 }
+</style>
+
+</body>
+</html>
+

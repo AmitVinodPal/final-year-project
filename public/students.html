@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Students</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .chessboard-bg {
+    background-color: #ecfdf5; /* very light green */
+    background-image:
+      linear-gradient(45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%);
+    background-size: 56px 56px;
+    background-position: 0 0, 0 28px, 28px -28px, -28px 0px;
+  }
+
+  .card-hover {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(29, 38, 59, 0.1);
+  }
+</style>
+</head>
+<body class="chessboard-bg font-sans text-gray-900">
+
+<div class="flex min-h-screen">
+  <aside class="w-72 bg-[#166534] text-white flex flex-col p-6 shadow-xl">
+    <div class="flex items-center gap-3 mb-8">
+      <div class="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">♟</div>
+      <div>
+        <div class="text-lg font-extrabold leading-tight">Academy Admin</div>
+        <div class="text-xs text-white/70">Strategy • Discipline • Growth</div>
+      </div>
+    </div>
+    <nav class="flex-1 space-y-1">
+      <a href="dashboard.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition"><span class="text-lg">♜</span><span class="font-medium">Dashboard</span></a>
+      <a href="coaches.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition"><span class="text-lg">♞</span><span class="font-medium">Manage Coaches</span></a>
+      <a href="students.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 transition"><span class="text-lg">♙</span><span class="font-semibold">Manage Students</span></a>
+      <a href="fees.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition"><span class="text-lg">♛</span><span class="font-medium">Fees Collection</span></a>
+      <a href="Aattendance.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition"><span class="text-lg">♝</span><span class="font-medium">Attendance</span></a>
+      <a href="whatsapp.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition"><span class="text-lg">♚</span><span class="font-medium">WhatsApp Reminder</span></a>
+      <a href="payroll.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition"><span class="text-lg">♖</span><span class="font-medium">Payroll</span></a>
+      <a href="reports.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition"><span class="text-lg">♗</span><span class="font-medium">Reports</span></a>
+      <a href="settings.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition"><span class="text-lg">♘</span><span class="font-medium">Settings</span></a>
+    </nav>
+    <button onclick="logout()" class="mt-6 w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 py-2.5 px-4 rounded-xl transition"><span class="text-base">⟵</span><span class="font-semibold">Logout</span></button>
+  </aside>
+  <div class="flex-1 flex flex-col">
+    <header class="sticky top-0 z-10 bg-white/80 backdrop-blur border-b border-emerald-100">
+      <div class="px-6 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <img src="images/logo.jpg" class="w-12 h-12 rounded-xl object-cover ring-1 ring-emerald-100" alt="Logo">
+          <div>
+            <h1 class="text-xl md:text-2xl font-extrabold text-[#166534] tracking-tight">Gurukul Chess Academy Admin Panel</h1>
+            <p class="text-xs md:text-sm text-gray-600 flex items-center gap-2"><span class="text-[#166534]">♟</span> Intelligence • Strategy • Professional Management <span class="text-[#166534]">♞</span></p>
+          </div>
+        </div>
+        <div class="hidden md:flex items-center gap-2 text-sm text-gray-600">
+          <span class="px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100">♜ Insights</span>
+          <span class="px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100">♝ Reports</span>
+          <span class="px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100">♛ Finance</span>
+        </div>
+      </div>
+    </header>
+  <main class="p-6 lg:p-8 flex-1">
+
+    <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Manage Students</h2>
+    <p class="text-sm text-gray-600 mb-6">Add and manage student records, branch, and status.</p>
+
+    <!-- ADD STUDENT -->
+    <div class="card-hover bg-white/90 border border-emerald-100 rounded-2xl shadow-sm p-6 mb-8">
+      <h3 class="text-lg font-semibold mb-4">Add Student</h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input id="studentName" class="border p-3 rounded" placeholder="Student Name">
+
+        <input id="studentPhone"
+               class="border p-3 rounded"
+               placeholder="Phone Number"
+               maxlength="10"
+               inputmode="numeric"
+               oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+
+        <select id="studentBranch" class="border p-3 rounded">
+          <option value="">Select Branch</option>
+          <option>Andheri</option>
+          <option>Jogeshwari</option>
+          <option>Dadar</option>
+          <option>Vile Parle</option>
+        </select>
+
+        <select id="studentStatus" class="border p-3 rounded">
+          <option value="Current" selected>Current</option>
+          <option value="Passed">Passed</option>
+        </select>
+      </div>
+
+      <button onclick="addStudent()"
+        class="mt-5 bg-[#166534] text-white px-6 py-2.5 rounded-xl hover:bg-[#14502a] transition font-medium">
+        Save Student
+      </button>
+    </div>
+
+    <!-- STUDENTS TABLE -->
+    <div class="card-hover bg-white/90 border border-emerald-100 rounded-2xl shadow-sm p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+        <h3 class="text-lg font-semibold">Students List</h3>
+
+        <div class="flex flex-wrap gap-2">
+          <button id="btnActiveStudents"
+            class="px-4 py-2 rounded-xl border border-emerald-200 bg-[#166534] text-white hover:bg-[#14502a] transition font-medium">
+            Active Students
+          </button>
+          <button id="btnPassedStudents"
+            class="px-4 py-2 rounded-xl border border-emerald-200 bg-white hover:bg-emerald-50 transition font-medium">
+            Passed Students
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full border">
+          <thead class="bg-emerald-50 border-b border-emerald-100">
+            <tr>
+              <th class="p-3 text-left">Name</th>
+              <th class="p-3 text-left">Phone</th>
+              <th class="p-3 text-left">Branch</th>
+              <th class="p-3 text-left">Status</th>
+              <th class="p-3 text-left">Action</th>
+            </tr>
+          </thead>
+
+          <tbody id="studentsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div id="editModal"
+     class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center">
+
+  <div class="bg-white p-6 rounded-xl shadow w-full max-w-md">
+    <h3 class="text-lg font-semibold mb-4">Edit Student</h3>
+
+    <input id="editName" class="border p-2 rounded w-full mb-3" placeholder="Name">
+
+    <input id="editPhone"
+           class="border p-2 rounded w-full mb-3"
+           placeholder="Phone"
+           maxlength="10"
+           inputmode="numeric"
+           oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+
+    <select id="editBranch" class="border p-2 rounded w-full mb-4">
+      <option>Andheri</option>
+      <option>Jogeshwari</option>
+      <option>Dadar</option>
+      <option>Vile Parle</option>
+    </select>
+
+    <select id="editStatus" class="border p-2 rounded w-full mb-4">
+      <option value="Current">Current</option>
+      <option value="Passed">Passed</option>
+    </select>
+
+    <div class="flex justify-end gap-3">
+      <button onclick="closeModal()" class="px-4 py-2 border rounded">Cancel</button>
+      <button onclick="saveEdit()" class="px-4 py-2 bg-green-600 text-white rounded">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+let editId = null;
+let selectedStatusFilter = "Current";
+
+function logout() {
+  if (confirm("Are you sure you want to logout?")) {
+    window.location.href = "admin-login.html";
+  }
+}
+
+/* ADD STUDENT */
+
+async function addStudent() {
+
+  const name = document.getElementById("studentName").value.trim();
+  const phone = document.getElementById("studentPhone").value.trim();
+  const branch = document.getElementById("studentBranch").value;
+  const status = document.getElementById("studentStatus").value;
+
+  const phoneRegex = /^[0-9]{10}$/;
+
+  if (!name || !phone || !branch) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  if (!phoneRegex.test(phone)) {
+    alert("Phone number must be exactly 10 digits");
+    return;
+  }
+
+  try {
+
+    const res = await fetch("http://localhost:5000/api/admin/add-student", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, phone, branch, status })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Student saved!");
+      loadStudents();
+    } else {
+      alert("Error: " + data.message);
+    }
+
+  } catch {
+    alert("Server error!");
+  }
+
+  document.getElementById("studentName").value = "";
+  document.getElementById("studentPhone").value = "";
+  document.getElementById("studentBranch").value = "";
+  document.getElementById("studentStatus").value = "Current";
+}
+
+
+/* LOAD STUDENTS */
+
+async function loadStudents() {
+
+  try {
+
+    const statusParam = selectedStatusFilter ? `?status=${encodeURIComponent(selectedStatusFilter)}` : "";
+    const res = await fetch(`http://localhost:5000/api/students${statusParam}`);
+    const data = await res.json();
+
+    const tableBody = document.getElementById("studentsTable");
+    tableBody.innerHTML = "";
+
+    data.students.forEach(s => {
+
+      tableBody.innerHTML += `
+      <tr class="border-t">
+
+        <td class="p-3">${s.name}</td>
+        <td class="p-3">${s.phone || ''}</td>
+        <td class="p-3">${s.branch}</td>
+        <td class="p-3">${s.status || 'Current'}</td>
+
+        <td class="p-3 space-x-3">
+
+          <button class="text-blue-600"
+          onclick="openEdit('${s._id}','${s.name}','${s.phone || ''}','${s.branch}','${s.status || 'Current'}')">
+          Edit
+          </button>
+
+          <button class="text-red-600"
+          onclick="deleteStudent('${s._id}')">
+          Delete
+          </button>
+
+        </td>
+
+      </tr>
+      `;
+
+    });
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load students!");
+  }
+
+}
+
+window.addEventListener('DOMContentLoaded', loadStudents);
+
+function setActiveStatusFilter(status) {
+  selectedStatusFilter = status;
+
+  const btnActive = document.getElementById("btnActiveStudents");
+  const btnPassed = document.getElementById("btnPassedStudents");
+
+  if (status === "Current") {
+    btnActive.className = "px-4 py-2 rounded border bg-green-600 text-white hover:bg-green-700";
+    btnPassed.className = "px-4 py-2 rounded border bg-white hover:bg-gray-50";
+  } else {
+    btnActive.className = "px-4 py-2 rounded border bg-white hover:bg-gray-50";
+    btnPassed.className = "px-4 py-2 rounded border bg-green-600 text-white hover:bg-green-700";
+  }
+
+  loadStudents();
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const btnActive = document.getElementById("btnActiveStudents");
+  const btnPassed = document.getElementById("btnPassedStudents");
+
+  if (btnActive) btnActive.addEventListener("click", () => setActiveStatusFilter("Current"));
+  if (btnPassed) btnPassed.addEventListener("click", () => setActiveStatusFilter("Passed"));
+
+  setActiveStatusFilter("Current");
+});
+
+
+/* DELETE STUDENT */
+
+async function deleteStudent(id) {
+
+  if (!confirm("Delete this student?")) return;
+
+  try {
+
+    await fetch(`http://localhost:5000/api/admin/delete-student/${id}`, {
+      method: "DELETE"
+    });
+
+    loadStudents();
+
+  } catch {
+    alert("Error deleting student!");
+  }
+
+}
+
+
+/* OPEN EDIT */
+
+function openEdit(id, name, phone, branch, status) {
+
+  editId = id;
+
+  document.getElementById("editName").value = name;
+  document.getElementById("editPhone").value = phone;
+  document.getElementById("editBranch").value = branch;
+  document.getElementById("editStatus").value = status || "Current";
+
+  document.getElementById("editModal").classList.remove("hidden");
+  document.getElementById("editModal").classList.add("flex");
+
+}
+
+
+/* CLOSE MODAL */
+
+function closeModal() {
+
+  document.getElementById("editModal").classList.add("hidden");
+  document.getElementById("editModal").classList.remove("flex");
+
+}
+
+
+/* SAVE EDIT */
+
+async function saveEdit() {
+
+  const name = document.getElementById("editName").value.trim();
+  const phone = document.getElementById("editPhone").value.trim();
+  const branch = document.getElementById("editBranch").value;
+  const status = document.getElementById("editStatus").value;
+
+  const phoneRegex = /^[0-9]{10}$/;
+
+  if (!name || !phone || !branch) {
+    alert("All fields required!");
+    return;
+  }
+
+  if (!phoneRegex.test(phone)) {
+    alert("Phone number must be exactly 10 digits");
+    return;
+  }
+
+  try {
+
+    const res = await fetch(`http://localhost:5000/api/admin/edit-student/${editId}`, {
+
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, phone, branch, status: status || undefined })
+
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+
+      alert("Updated successfully!");
+
+      loadStudents();
+      closeModal();
+
+    } else {
+      alert("Update failed!");
+    }
+
+  } catch {
+    alert("Server error!");
+  }
+
+}
+
+</script>
+
+</body>
+</html>

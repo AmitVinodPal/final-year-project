@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payslips</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .chessboard-bg {
+      background-color: #ecfdf5;
+      background-image:
+        linear-gradient(45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%);
+      background-size: 56px 56px;
+      background-position: 0 0, 0 28px, 28px -28px, -28px 0px;
+    }
+
+    .card-hover {
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 30px rgba(29, 38, 59, 0.1);
+    }
+  </style>
+
+</head>
+<body class="bg-gray-100 flex">
+
+  <aside class="w-64 bg-green-700 text-white min-h-screen p-5 space-y-4">
+    <h2 class="text-2xl font-bold">Coach Panel</h2>
+
+    <span id="coachName" class="font-semibold text-white"></span>
+    <nav class="space-y-1">
+      <a href="coach-dashboard.html" class="block p-2 rounded hover:bg-green-600">Dashboard</a>
+      
+      <a href="coach-sessions.html" class="block p-2 rounded hover:bg-green-600">My Sessions</a>
+   
+      <a href="coach-payslips.html" class="block p-2 rounded bg-green-600">Payslips</a>
+     
+    </nav>
+ 
+  </aside>
+
+  <main class="flex-1 p-8">
+    <h1 class="text-3xl font-bold mb-6">Payslips</h1>
+
+    <div id="payslipContainer" class="space-y-4"></div>
+
+  </main>
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const teacherId = localStorage.getItem("teacherId");
+  const coachName = localStorage.getItem("teacherName");
+
+  if (!teacherId) {
+    alert("Please login first");
+    window.location.href = "teacher-login.html";
+    return;
+  }
+
+  document.getElementById("coachName").innerText = coachName;
+
+  loadPayslips();
+
+});
+
+
+// LOAD PAYSLIPS
+async function loadPayslips() {
+
+  const teacherId = localStorage.getItem("teacherId");
+
+  const container = document.getElementById("payslipContainer");
+
+  container.innerHTML = "<p>Loading...</p>";
+
+  try {
+
+    const response = await fetch(`http://localhost:5000/api/coach-payslips/${teacherId}`, {
+
+      cache: "no-store"
+    });
+
+    const payslips = await response.json();
+
+    container.innerHTML = "";
+
+    if (!payslips.length) {
+
+      container.innerHTML =
+        "<p class='text-gray-600'>No payslips available</p>";
+
+      return;
+    }
+
+    payslips.forEach(p => {
+
+      container.innerHTML += `
+        <div class="bg-white p-4 rounded shadow flex justify-between items-center">
+
+          <div>
+            <h4 class="font-bold">${p.month}</h4>
+            <p class="text-gray-600 font-semibold">₹${p.totalAmount}</p>
+          </div>
+
+          <div class="space-x-2">
+
+            <button onclick="downloadSlip('${p._id}', '${p.month}')"
+              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+              Download
+            </button>
+
+            <button onclick="deleteSlip('${p._id}')"
+              class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+              Delete
+            </button>
+
+          </div>
+
+        </div>
+      `;
+    });
+
+  }
+  catch (error) {
+
+    console.error(error);
+
+    container.innerHTML =
+      "<p class='text-red-600'>Error loading payslips</p>";
+
+  }
+
+}
+
+
+async function deleteSlip(id) {
+
+  if (!confirm("Delete this payslip?")) return;
+
+  try {
+
+    const res = await fetch(`http://localhost:5000/api/payslips/${id}`, {
+      method: "DELETE"
+    });
+
+    const data = await res.json();
+
+    console.log("Delete response:", data);
+
+    if (!res.ok) {
+      alert("Delete failed: " + (data.error || "Unknown error"));
+      return;
+    }
+
+    loadPayslips();
+
+  }
+  catch (error) {
+
+    console.error(error);
+
+    alert("Delete failed");
+
+  }
+
+}
+
+
+// DOWNLOAD
+function downloadSlip(id, month) {
+
+  window.open(
+    `monthly-payslip.html?id=${id}&month=${month}`,
+    "_blank"
+  );
+
+}
+
+
+// AUTO REFRESH every 5 seconds
+setInterval(loadPayslips, 5000);
+
+</script>
+
+
+
+</body>
+</html>

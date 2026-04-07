@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gurukul Attendance Portal</title>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+  .chessboard-bg {
+    background-color: #ecfdf5; /* very light green */
+    background-image:
+      linear-gradient(45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%);
+    background-size: 56px 56px;
+    background-position: 0 0, 0 28px, 28px -28px, -28px 0px;
+  }
+
+  .card-hover {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(29, 38, 59, 0.1);
+  }
+</style>
+</head>
+
+<body class="chessboard-bg font-sans text-gray-900">
+<script>
+async function submitTeacherLogin() {
+  const teacher = document.getElementById("teacherName").value.trim();
+  const username = document.getElementById("branchUsername").value.trim();
+  const password = document.getElementById("branchPassword").value.trim();
+  const sessionType = document.getElementById("sessionType").value;
+  const sessionHours = parseInt(document.getElementById("sessionHours").value);
+  const sessionMinutes = parseInt(document.getElementById("sessionMinutes").value);
+
+  if (!teacher || !username || !password || !sessionType) {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/teacher/login-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: teacher,
+        username,
+        password,
+        sessionType,
+        sessionHours,
+        sessionMinutes
+      })
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      alert(data.message || "Login failed");
+      return;
+    }
+
+    // Save info locally
+    localStorage.setItem("teacherId", data.teacher.id);
+    localStorage.setItem("teacherName", data.teacher.name);
+    localStorage.setItem("branch", data.teacher.branch);
+    localStorage.setItem("sessionType", sessionType);
+    localStorage.setItem("sessionHours", sessionHours);
+    localStorage.setItem("sessionMinutes", sessionMinutes);
+
+    // Redirect
+    window.location.href = "branch-selection.html";
+
+  } catch (error) {
+    console.error("Login Error:", error);
+    alert("Server error. Try again.");
+  }
+}
+
+</script>
+
+
+
+
+
+
+<!-- HEADER -->
+<div class="text-center mt-8">
+    <div class="flex justify-center items-center space-x-4">
+        <img src="images/logo.jpg" class="w-16 h-16" alt="Logo">
+        <h1 class="text-3xl font-extrabold text-green-900 tracking-wide">
+            Gurukul Chess Academy ®
+        </h1>
+    </div>
+
+    <p class="mt-2 text-sm font-semibold text-gray-700">
+        EVERY CHESS MASTER WAS ONCE A BEGINNER
+    </p>
+    <p class="text-xs text-gray-500">– IRVING CHERNEV</p>
+
+    <div class="flex items-center justify-center mt-4 w-full max-w-lg mx-auto">
+        <div class="flex-1 border-t border-gray-400"></div>
+        <span class="px-3 text-gray-600 text-sm">♟</span>
+        <div class="flex-1 border-t border-gray-400"></div>
+    </div>
+</div>
+<!-- MAIN SECTION -->
+<div class="w-full flex justify-center items-left p-6">
+
+    <div class="w-full max-w-4xl bg-white/95 backdrop-blur-md rounded-2xl shadow-xl flex overflow-hidden border border-gray-100">
+
+        <!-- LEFT SIDE -->
+        <div class="w-full md:w-1/2 p-8">
+
+            <!-- Title with Icon -->
+            <div class="flex items-centre justify-center gap-3 mb-8">
+               
+    <i class="	fas fa-chess text-green-700 text-3xl"></i>
+                <h2 class="text-3xl font-extrabold text-green-900 tracking-wide">
+            Coach Login
+        </h2>
+            </div>
+ 
+<!-- SESSION TYPE + DURATION (PROPER ALIGNMENT) -->
+<div class="mb-4">
+  <div class="grid grid-cols-4 gap-4 items-end">
+
+    <!-- SESSION TYPE (WIDER) -->
+    <div class="col-span-2">
+      <label class="block text-sm font-semibold text-gray-700 mb-1">
+        Session Type
+      </label>
+      <select
+        id="sessionType"
+        class="w-full h-12 px-4 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none"
+      >
+        <option value=""> session type</option>
+        <option value="Group">Group</option>
+        <option value="One-on-One">One-on-One</option>
+      </select>
+    </div>
+
+    <!-- HOURS -->
+    <div class="flex flex-col items-center">
+      <label class="block text-sm font-semibold text-gray-700 mb-1">
+        Hours
+      </label>
+      <input
+        id="sessionHours"
+        type="number"
+        min="0"
+        max="12"
+        value="1"
+        class="w-full h-10 text-center border rounded-lg focus:ring-2 focus:ring-green-600 outline-none"
+      />
+    </div>
+
+    <!-- MINUTES -->
+    <div class="flex flex-col items-center">
+      <label class="block text-sm font-semibold text-gray-700 mb-1">
+        Minutes
+      </label>
+      <input
+        id="sessionMinutes"
+        type="number"
+        min="0"
+        max="59"
+        step="5"
+        value="30"
+        class="w-full h-10 text-center border rounded-lg focus:ring-2 focus:ring-green-600 outline-none"
+      />
+    </div>
+
+  </div>
+
+ 
+</div>
+
+
+
+
+
+<!-- Teacher Name -->
+<div class="mb-4">
+  <label class="text-sm font-semibold text-gray-700">Teacher Name</label>
+  <div class="relative mt-1">
+    <i class="fa fa-user text-gray-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+    <input
+      id="teacherName"
+      type="text"
+      class="w-full pl-10 p-3 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none"
+      placeholder="Enter teacher name">
+  </div>
+</div>
+
+<!-- Username -->
+<div class="mb-4">
+  <label class="text-sm font-semibold text-gray-700">Username</label>
+  <div class="relative mt-1">
+    <i class="fa fa-id-badge text-gray-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+    <input
+      id="branchUsername"
+      type="text"
+      class="w-full pl-10 p-3 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none"
+      placeholder="Enter username">
+  </div>
+</div>
+
+<!-- Password -->
+<div class="mb-6">
+  <label class="text-sm font-semibold text-gray-700">Password</label>
+  <div class="relative mt-1">
+    <i class="fa fa-lock text-gray-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+    <input
+      id="branchPassword"
+      type="password"
+      class="w-full pl-10 p-3 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none"
+      placeholder="Enter password">
+  </div>
+</div>
+
+            <!-- Button -->
+            <button onclick="submitTeacherLogin()"
+                class="w-full bg-green-700 text-white py-3 rounded-lg font-semibold mt-6 shadow-md hover:bg-green-800">
+                Go to Branch Selection
+            </button>
+        </div>
+<!-- RIGHT IMAGE -->
+<div class="hidden md:flex md:w-1/2 items-center justify-center bg-gray-50 
+            p-6 border-l flex-shrink-0">
+    <img src="images/sideimg.jpg"
+     class="w-90 h-full object-contain scale-105 rounded-xl shadow-lg border border-gray-200"
+     alt="Zoomed Image">
+
+</div>
+
+
+    </div>
+</div>
+
+</body>
+</html>

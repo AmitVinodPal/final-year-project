@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branch Attendance Selection</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .chessboard-bg {
+            background-color: #ecfdf5;
+            background-image:
+                linear-gradient(45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%);
+            background-size: 56px 56px;
+            background-position: 0 0, 0 28px, 28px -28px, -28px 0px;
+        }
+        
+        .card-hover {
+            transition: transform 180ms ease, box-shadow 180ms ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 30px rgba(29, 38, 59, 0.1);
+        }
+    </style>
+
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-cover bg-center backdrop-blur-sm"
+      style="background-image: url('images/background.jpg');">
+
+    <!-- HEADER -->
+    <div class="text-center pt-10 pb-4">
+
+        <div class="flex flex-col items-center space-y-2">
+
+            <div class="flex items-center space-x-4">
+                <img src="images/logo.jpg" class="w-20 h-20 drop-shadow-lg" alt="Logo">
+
+                <h1 class="text-4xl font-extrabold tracking-wide text-green-900 drop-shadow-md">
+                    GURUKUL CHESS ACADEMY ®
+                </h1>
+            </div>
+
+            <p class="mt-2 text-base font-semibold text-gray-700">
+                EVERY CHESS MASTER WAS ONCE A BEGINNER
+            </p>
+            <p class="text-sm text-gray-500">– IRVING CHERNEV</p>
+
+            <!-- Divider -->
+            <div class="flex items-center justify-center mt-4 w-full max-w-xl mx-auto">
+                <div class="flex-1 border-t border-gray-400"></div>
+                <span class="px-4 text-gray-700 text-2xl">♟</span>
+                <div class="flex-1 border-t border-gray-400"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="w-full flex justify-center px-6 pb-20">
+
+        <div class="w-full max-w-4xl bg-white/90 backdrop-blur-xl shadow-2xl rounded-3xl p-10 mt-6 border-t-4 border-green-700">
+
+            <!-- Title with Icon -->
+            <div class="flex items-center justify-center gap-3 mb-8">
+                <i class="fa-solid fa-location-dot text-green-700 text-3xl"></i>
+
+                <h2 class="text-2xl font-semibold text-gray-800">
+                    Select Branch for Attendance
+                </h2>
+            </div>
+
+            <!-- Branch Card Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Template card style reused for each branch -->
+                <div class="group p-6 bg-gradient-to-br from-white to-green-50 rounded-xl shadow hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer border border-gray-200"
+                     onclick="openBranchLogin('Dadar')">
+                    <h2 class="font-bold text-lg text-gray-800 group-hover:text-green-700 transition">
+                        Dadar
+                    </h2>
+                    <p class="text-gray-600 text-sm mt-1">Sane Guruji High School</p>
+                </div>
+
+                <div class="group p-6 bg-gradient-to-br from-white to-green-50 rounded-xl shadow hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer border border-gray-200"
+                     onclick="openBranchLogin('Andheri')">
+                    <h2 class="font-bold text-lg text-gray-800 group-hover:text-green-700 transition">
+                        Andheri
+                    </h2>
+                    <p class="text-gray-600 text-sm mt-1">Bombay Cambridge, Andheri West</p>
+                </div>
+
+                <div class="group p-6 bg-gradient-to-br from-white to-green-50 rounded-xl shadow hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer border border-gray-200"
+                     onclick="openBranchLogin('Jogeshwari')">
+                    <h2 class="font-bold text-lg text-gray-800 group-hover:text-green-700 transition">
+                        Jogeshwari
+                    </h2>
+                    <p class="text-gray-600 text-sm mt-1">Jogeshwari Education Society</p>
+                </div>
+
+                <div class="group p-6 bg-gradient-to-br from-white to-green-50 rounded-xl shadow hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer border border-gray-200"
+                     onclick="openBranchLogin('Vileparle')">
+                    <h2 class="font-bold text-lg text-gray-800 group-hover:text-green-700 transition">
+                        Vileparle
+                    </h2>
+                    <p class="text-gray-600 text-sm mt-1">Vileparle Mahila Sangh</p>
+                </div>
+
+            </div> <!-- END GRID -->
+
+        </div>
+    </div>
+
+ 
+       
+    <script>
+function openBranchLogin(branchName) {
+  const teacherName = localStorage.getItem("teacherName");
+
+  if (!teacherName) {
+    alert("Teacher not logged in!");
+    return;
+  }
+
+  fetch("http://localhost:5000/api/teacher/select-branch", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ teacherName, branch: branchName })
+  })
+  .then(async (res) => {
+    if (!res.ok) {
+      const text = await res.text(); // in case HTML 404 comes
+      throw new Error(`Server error: ${text}`);
+    }
+    return res.json();
+  })
+  .then(data => {
+    if (!data.success) {
+      alert("Branch save failed: " + data.message);
+      return;
+    }
+    window.location.href = "selection.html?branch=" + encodeURIComponent(branchName);
+  })
+  .catch(err => {
+    console.error(err);
+    alert("An error occurred. Check console.");
+  });
+}
+
+</script>
+
+
+
+</body>
+</html>

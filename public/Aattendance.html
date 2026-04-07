@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .chessboard-bg {
+    background-color: #ecfdf5;
+    background-image:
+      linear-gradient(45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%);
+    background-size: 56px 56px;
+    background-position: 0 0, 0 28px, 28px -28px, -28px 0px;
+  }
+
+  .card-hover {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(29, 38, 59, 0.1);
+  }
+</style>
+</head>
+<body class="chessboard-bg font-sans text-gray-900">
+
+<div class="flex min-h-screen">
+
+  <!-- SIDEBAR (shared admin theme) -->
+  <aside class="w-72 bg-[#166534] text-white flex flex-col p-6 shadow-xl">
+    <div class="flex items-center gap-3 mb-8">
+      <div class="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">♟</div>
+      <div>
+        <div class="text-lg font-extrabold leading-tight">Academy Admin</div>
+        <div class="text-xs text-white/70">Strategy • Discipline • Growth</div>
+      </div>
+    </div>
+    <nav class="flex-1 space-y-1">
+      <a href="dashboard.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♜</span><span class="font-medium">Dashboard</span>
+      </a>
+      <a href="coaches.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♞</span><span class="font-medium">Manage Coaches</span>
+      </a>
+      <a href="students.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♙</span><span class="font-medium">Manage Students</span>
+      </a>
+      <a href="fees.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♛</span><span class="font-medium">Fees Collection</span>
+      </a>
+      <a href="Aattendance.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 transition">
+        <span class="text-lg">♝</span><span class="font-semibold">Attendance</span>
+      </a>
+      <a href="whatsapp.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♚</span><span class="font-medium">WhatsApp Reminder</span>
+      </a>
+      <a href="payroll.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♖</span><span class="font-medium">Payroll</span>
+      </a>
+      <a href="reports.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♗</span><span class="font-medium">Reports</span>
+      </a>
+      <a href="settings.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♘</span><span class="font-medium">Settings</span>
+      </a>
+    </nav>
+    <button onclick="logout()" class="mt-6 w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 py-2.5 px-4 rounded-xl transition">
+      <span class="text-base">⟵</span><span class="font-semibold">Logout</span>
+    </button>
+  </aside>
+
+  <!-- MAIN SHELL -->
+  <div class="flex-1 flex flex-col">
+    <header class="sticky top-0 z-10 bg-white/80 backdrop-blur border-b border-emerald-100">
+      <div class="px-6 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <img src="images/logo.jpg" class="w-12 h-12 rounded-xl object-cover ring-1 ring-emerald-100" alt="Logo">
+          <div>
+            <h1 class="text-xl md:text-2xl font-extrabold text-[#166534] tracking-tight">
+              Gurukul Chess Academy Admin Panel
+            </h1>
+            <p class="text-xs md:text-sm text-gray-600 flex items-center gap-2">
+              <span class="text-[#166534]">♟</span>
+              Intelligence • Strategy • Professional Management
+              <span class="text-[#166534]">♞</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="p-6 lg:p-8 flex-1">
+      <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Attendance</h2>
+      <p class="text-sm text-gray-600 mb-6">
+        View saved attendance records by date and branch.
+      </p>
+
+      <!-- Search Filters -->
+      <div class="card-hover bg-white/90 p-4 rounded-2xl shadow-sm border border-emerald-100 mb-6 flex flex-col md:flex-row gap-4">
+        <input
+          type="date"
+          id="attendanceDate"
+          class="border border-gray-300 rounded px-4 py-2"
+        />
+
+        <select
+          id="attendanceBranch"
+          class="border border-gray-300 rounded px-4 py-2"
+        >
+          <option value="">Select Branch</option>
+          <option value="Andheri">Bombay Cambridge, Andheri West</option>
+          <option value="Jogeshwari">Jogeshari EducationSociety ,Jogeshwari East</option>
+          <option value="Dadar">Sane Guruji High School ,Dadar west</option>
+          <option value="Vileparle">Vileparle Mahila Sangh ,Vileparle East</option>
+        </select>
+
+        <button
+          onclick="loadAttendance()"
+          class="bg-[#166534] text-white px-6 py-2 rounded-xl hover:bg-[#14502a] transition font-medium"
+        >
+          Load Attendance
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white rounded-2xl shadow-sm border border-emerald-100">
+          <thead>
+            <tr class="bg-emerald-50 text-emerald-900">
+              <th class="text-left p-3">Name</th>
+              <th class="text-left p-3">Branch</th>
+              <th class="text-left p-3">Date</th>
+              <th class="text-left p-3">Status</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceBody" class="divide-y divide-gray-200">
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+<script>
+function logout() {
+  if (confirm("Are you sure you want to logout?")) {
+    window.location.href = "admin-login.html";
+  }
+}
+function filterAttendance() {
+  const nameInput = document.getElementById("searchName").value.toLowerCase();
+  const dateInput = document.getElementById("searchDate").value;
+
+  const rows = document.querySelectorAll("tbody tr");
+
+  rows.forEach(row => {
+    const name = row.cells[0].textContent.toLowerCase();
+    const date = row.cells[2].textContent;
+
+    const nameMatch = name.includes(nameInput);
+    const dateMatch = dateInput === "" || date === dateInput;
+
+    row.style.display = (nameMatch && dateMatch) ? "" : "none";
+  });
+}
+
+function resetFilter() {
+  document.getElementById("searchName").value = "";
+  document.getElementById("searchDate").value = "";
+
+  const rows = document.querySelectorAll("tbody tr");
+  rows.forEach(row => row.style.display = "");
+}
+
+const API_URL = "http://localhost:5000";
+
+function loadAttendance() {
+  const date = document.getElementById("attendanceDate").value;
+const branch = document.getElementById("attendanceBranch").value.toLowerCase();
+
+
+  if (!date || !branch) {
+    alert("Please select date and branch");
+    return;
+  }
+
+  fetch(`${API_URL}/api/attendance/${date}/${branch}`)
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success) {
+        alert("Failed to fetch attendance");
+        return;
+      }
+
+      const tbody = document.getElementById("attendanceBody");
+      tbody.innerHTML = "";
+
+      data.data.forEach(record => {
+        const row = `
+          <tr>
+            <td class="p-3">${record.name}</td>
+            <td class="p-3">${record.branch}</td>
+            <td class="p-3">${record.date}</td>
+            <td class="p-3 font-semibold ${
+              record.status === "Present" ? "text-green-600" : "text-red-600"
+            }">
+              ${record.status}
+            </td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Server error");
+    });
+}
+</script>
+</body>
+</html>

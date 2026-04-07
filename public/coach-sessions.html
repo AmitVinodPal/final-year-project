@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Sessions</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .chessboard-bg {
+      background-color: #ecfdf5;
+      background-image:
+        linear-gradient(45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%);
+      background-size: 56px 56px;
+      background-position: 0 0, 0 28px, 28px -28px, -28px 0px;
+    }
+
+    .card-hover {
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 30px rgba(29, 38, 59, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-100 flex">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-green-700 text-white min-h-screen p-5 space-y-4">
+    <h2 class="text-2xl font-bold">Coach Panel</h2>
+ <span id="coachName" class="block font-semibold"></span>
+    <nav class="space-y-1">
+      <a href="coach-dashboard.html" class="block p-2 rounded hover:bg-green-600">Dashboard</a>
+      <a href="coach-sessions.html" class="block p-2 rounded bg-green-600">My Sessions</a>
+    
+      <a href="coach-payslips.html" class="block p-2 rounded hover:bg-green-600">Payslips</a>
+      
+    </nav>
+
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 p-8">
+    <h1 class="text-3xl font-bold mb-6">My Sessions</h1>
+
+   
+
+    <!-- Sessions Table -->
+    <div class="bg-white shadow rounded overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-green-600 text-white">
+          <tr>
+            <th class="px-6 py-3 text-left text-sm font-semibold">Date</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold">Time</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold">Branch</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold">Type</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold">Duration (min)</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="sessionsTableBody" class="divide-y divide-gray-200">
+          <!-- Rows will be dynamically populated -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded w-96">
+      <h2 class="text-xl font-bold mb-4">Edit Session</h2>
+      <form id="editForm" class="space-y-3">
+        <input type="date" id="editDate" class="w-full border px-2 py-1 rounded" required>
+        <input type="time" id="editTime" class="w-full border px-2 py-1 rounded" required>
+        <input type="text" id="editBranch" placeholder="Branch" class="w-full border px-2 py-1 rounded" required>
+        <input type="text" id="editType" placeholder="Type" class="w-full border px-2 py-1 rounded" required>
+        <input type="number" id="editDuration" placeholder="Duration (minutes)" class="w-full border px-2 py-1 rounded" required>
+        <div class="flex justify-end gap-2">
+          <button type="button" id="cancelEdit" class="px-4 py-2 bg-gray-400 text-white rounded">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+      const teacherId = localStorage.getItem("teacherId");
+      const coachName = localStorage.getItem("teacherName");
+
+      if (!teacherId) {
+        alert("Please login first");
+        window.location.href = "teacher-login.html";
+        return;
+      }
+
+      document.getElementById("coachName").innerText = " " + coachName;
+
+      try {
+        const res = await fetch(`/api/sessions?teacherId=${teacherId}`);
+        const sessions = await res.json();
+
+        let total = sessions.length;
+        let group = 0;
+        let oneOnOne = 0;
+
+        sessions.forEach(session => {
+          if (session.type === "Group") group++;
+          if (session.type === "One-on-One") oneOnOne++;
+        });
+
+        document.getElementById("totalSessions").innerText = total;
+        document.getElementById("groupSessions").innerText = group;
+        document.getElementById("oneOnOneSessions").innerText = oneOnOne;
+
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
+      }
+    });
+
+  
+  document.addEventListener("DOMContentLoaded", async () => {
+ 
+const teacherId = localStorage.getItem("teacherId");
+
+if (!teacherId) {
+  alert("Teacher login nahi hai");
+  window.location.href = "teacher-login.html";
+}
+
+
+   
+    const tableBody = document.getElementById("sessionsTableBody");
+
+    async function fetchSessions() {
+      try {
+        const response = await fetch(`/api/sessions?teacherId=${teacherId}`);
+        const sessions = await response.json();
+        tableBody.innerHTML = "";
+
+        sessions.forEach(session => {
+          const row = document.createElement("tr");
+          row.classList.add("hover:bg-gray-100");
+          row.dataset.id = session._id;
+          row.innerHTML = `
+            <td class="px-6 py-4">${session.date}</td>
+            <td class="px-6 py-4">${session.time}</td>
+            <td class="px-6 py-4">${session.branch}</td>
+            <td class="px-6 py-4">${session.type}</td>
+            <td class="px-6 py-4">${session.duration}</td>
+           <td class="px-6 py-4 space-x-4">
+  <span class="editBtn text-blue-600 cursor-pointer hover:underline font-semibold">
+    Edit
+  </span>
+  <span class="deleteBtn text-red-600 cursor-pointer hover:underline font-semibold">
+    Delete
+  </span>
+</td>
+
+          `;
+          tableBody.appendChild(row);
+        });
+
+        attachEventListeners();
+      } catch (err) {
+        console.error("Failed to fetch sessions:", err);
+      }
+    }
+
+    function attachEventListeners() {
+      document.querySelectorAll('.deleteBtn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const sessionId = e.target.closest('tr').dataset.id;
+          if (confirm('Are you sure you want to delete this session?')) {
+            await fetch(`/api/sessions/${sessionId}`, { method: 'DELETE' });
+            fetchSessions();
+          }
+        });
+      });
+
+      document.querySelectorAll('.editBtn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const tr = e.target.closest('tr');
+          const sessionId = tr.dataset.id;
+          document.getElementById('editModal').classList.remove('hidden');
+
+          document.getElementById('editDate').value = tr.children[0].textContent;
+          document.getElementById('editTime').value = tr.children[1].textContent;
+          document.getElementById('editBranch').value = tr.children[2].textContent;
+          document.getElementById('editType').value = tr.children[3].textContent;
+          document.getElementById('editDuration').value = tr.children[4].textContent;
+
+          document.getElementById('editForm').onsubmit = async (ev) => {
+            ev.preventDefault();
+            const updatedSession = {
+              date: document.getElementById('editDate').value,
+              time: document.getElementById('editTime').value,
+              branch: document.getElementById('editBranch').value,
+              type: document.getElementById('editType').value,
+              duration: parseInt(document.getElementById('editDuration').value, 10)
+            };
+
+            await fetch(`/api/sessions/${sessionId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(updatedSession)
+            });
+
+            document.getElementById('editModal').classList.add('hidden');
+            fetchSessions();
+          };
+        });
+      });
+
+      document.getElementById('cancelEdit').addEventListener('click', () => {
+        document.getElementById('editModal').classList.add('hidden');
+      });
+    }
+
+fetchSessions();
+
+});
+
+
+  </script>
+
+</body>
+</html>

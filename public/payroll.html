@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Coach Payroll</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .chessboard-bg {
+    background-color: #ecfdf5; /* very light green */
+    background-image:
+      linear-gradient(45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%);
+    background-size: 56px 56px;
+    background-position: 0 0, 0 28px, 28px -28px, -28px 0px;
+  }
+
+  .card-hover {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(29, 38, 59, 0.1);
+  }
+</style>
+</head>
+
+<body class="chessboard-bg font-sans text-gray-900">
+<div class="flex min-h-screen">
+
+  <!-- SIDEBAR (shared admin theme) -->
+  <aside class="w-72 bg-[#166534] text-white flex flex-col p-6 shadow-xl">
+    <div class="flex items-center gap-3 mb-8">
+      <div class="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">♟</div>
+      <div>
+        <div class="text-lg font-extrabold leading-tight">Academy Admin</div>
+        <div class="text-xs text-white/70">Strategy • Discipline • Growth</div>
+      </div>
+    </div>
+    <nav class="flex-1 space-y-1">
+      <a href="dashboard.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♜</span><span class="font-medium">Dashboard</span>
+      </a>
+      <a href="coaches.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♞</span><span class="font-medium">Manage Coaches</span>
+      </a>
+      <a href="students.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♙</span><span class="font-medium">Manage Students</span>
+      </a>
+      <a href="fees.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♛</span><span class="font-medium">Fees Collection</span>
+      </a>
+      <a href="Aattendance.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♝</span><span class="font-medium">Attendance</span>
+      </a>
+      <a href="whatsapp.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♚</span><span class="font-medium">WhatsApp Reminder</span>
+      </a>
+      <a href="payroll.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 transition">
+        <span class="text-lg">♖</span><span class="font-semibold">Payroll</span>
+      </a>
+      <a href="reports.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♗</span><span class="font-medium">Reports</span>
+      </a>
+      <a href="settings.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♘</span><span class="font-medium">Settings</span>
+      </a>
+    </nav>
+    <button onclick="logout()" class="mt-6 w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 py-2.5 px-4 rounded-xl transition">
+      <span class="text-base">⟵</span><span class="font-semibold">Logout</span>
+    </button>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="flex-1 flex flex-col">
+    <header class="sticky top-0 z-10 bg-white/80 backdrop-blur border-b border-emerald-100">
+      <div class="px-6 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <img src="images/logo.jpg" class="w-12 h-12 rounded-xl object-cover ring-1 ring-emerald-100" alt="Logo">
+          <div>
+            <h1 class="text-xl md:text-2xl font-extrabold text-[#166534] tracking-tight">
+              Gurukul Chess Academy Admin Panel
+            </h1>
+            <p class="text-xs md:text-sm text-gray-600 flex items-center gap-2">
+              <span class="text-[#166534]">♟</span>
+              Intelligence • Strategy • Professional Management
+              <span class="text-[#166534]">♞</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="p-6 lg:p-8 flex-1">
+      <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight mb-2">
+        Coach Payroll
+      </h1>
+      <p class="text-sm text-gray-600 mb-6">
+        Calculate sessions, apply hourly rates, and generate monthly payslips for coaches.
+      </p>
+
+      <div class="card-hover bg-white/90 rounded-2xl shadow-sm border border-emerald-100 p-6 mb-6">
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
+          <div class="relative">
+            <span id="monthPlaceholder"
+              class="absolute left-3 top-2 text-gray-400 pointer-events-none">
+              Select Month
+            </span>
+            <input type="month"
+              id="filterMonth"
+              class="border p-2 rounded w-44 bg-white text-transparent focus:text-black"
+              onchange="toggleMonthPlaceholder()"
+              onfocus="toggleMonthPlaceholder()">
+          </div>
+
+          <button onclick="generateMonthlySlip()"
+            class="bg-[#166534] text-white px-4 py-2 rounded-xl hover:bg-[#14502a] transition font-medium">
+            Generate Monthly Slip
+          </button>
+        </div>
+      </div>
+
+      <div class="card-hover bg-white/90 rounded-2xl shadow-sm border border-emerald-100 p-6 mb-6">
+        <table class="w-full bg-white border rounded-xl overflow-hidden">
+          <thead class="bg-emerald-50">
+            <tr>
+              <th class="border p-2 text-left">Name</th>
+              <th class="border p-2 text-left">Total Session</th>
+              <th class="border p-2 text-left">Total Hours</th>
+              <th class="border p-2 text-left">Select</th>
+            </tr>
+          </thead>
+          <tbody id="payrollTable"></tbody>
+        </table>
+      </div>
+
+      <div id="calculationSection" class="hidden card-hover bg-white/90 p-6 rounded-2xl shadow-sm border border-emerald-100">
+        <h2 class="text-lg font-bold mb-4">Session Calculation</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium">Teacher</label>
+            <input type="text" id="calcName" class="border p-2 w-full rounded" readonly>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium">Hours</label>
+            <input type="text" id="calcHours" class="border p-2 w-full rounded" readonly>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium">Rate per Hour</label>
+            <input type="number" id="calcRate"
+              class="border p-2 w-full rounded"
+              oninput="calculateTotal()">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium">Total Amount</label>
+            <input type="text" id="calcTotal" class="border p-2 w-full rounded bg-gray-100" readonly>
+          </div>
+        </div>
+
+        <button onclick="generatePayslip()"
+          class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-xl hidden"
+          id="generateBtn">
+          Generate Payslip
+        </button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+
+
+async function generateMonthlySlip() {
+  const month = document.getElementById("filterMonth").value;
+  if (!month) return alert("Select month");
+
+  const res = await fetch(`/api/payroll?month=${month}`);
+  const data = await res.json();
+
+  renderTable(data);
+}
+
+function renderTable(data) {
+  const table = document.getElementById("payrollTable");
+  table.innerHTML = "";
+
+  data.forEach(item => {
+
+    table.innerHTML += `
+      <tr class="hover:bg-gray-100">
+        <td class="border p-2">${item.teacherName}</td>
+        <td class="border p-2">${item.totalSessions}</td>
+        <td class="border p-2">${item.totalHours}</td>
+        <td class="border p-2 text-center">
+          <button 
+            onclick="selectSession('${item.teacherName}', ${item.totalHours}, '${item.teacherId}', ${item.totalSessions})"
+            class="bg-green-600 text-white px-3 py-1 rounded text-sm">
+            Select
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+function selectSession(name, hours, coachId, totalSessions) {
+
+  document.getElementById("calculationSection").classList.remove("hidden");
+
+  document.getElementById("calcName").value = name;
+  document.getElementById("calcHours").value = Number(hours);
+
+  window.selectedCoachId = coachId;
+  window.selectedTotalSessions = Number(totalSessions);
+
+  document.getElementById("generateBtn").classList.add("hidden");
+}
+
+function calculateTotal() {
+
+  const hours = Number(document.getElementById("calcHours").value);
+  const rate = Number(document.getElementById("calcRate").value);
+
+  if (!rate) return;
+
+  const total = hours * rate;
+
+  document.getElementById("calcTotal").value = total;
+
+  document.getElementById("generateBtn").classList.remove("hidden");
+}
+async function generatePayslip() {
+
+  const name = document.getElementById("calcName").value;
+  const hours = Number(document.getElementById("calcHours").value);
+  const rate = Number(document.getElementById("calcRate").value);
+  const total = Number(document.getElementById("calcTotal").value);
+  const month = document.getElementById("filterMonth").value;
+
+  if (!name || !month || !rate) {
+    return alert("Fill all details");
+  }
+
+  // ⚠️ You must store coachId also when selecting
+  const coachId = window.selectedCoachId;
+  const totalSessions = window.selectedTotalSessions;
+
+  const res = await fetch("/api/generate-payslip", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      coachId,
+      coachName: name,
+      month,
+      totalSessions,
+      totalHours: hours,
+      ratePerHour: rate,
+      totalAmount: total
+    })
+  });
+
+  const result = await res.json();
+
+  alert("Payslip Saved Successfully ");
+}
+
+
+
+function openSlip(name, date) {
+  window.open(`slip.html?name=${name}&date=${date}`, "_blank");
+}
+
+function sendSlip(name, amount) {
+  alert(`Sent to ${name}\nAmount: ₹${amount}`);
+}
+
+
+function toggleMonthPlaceholder() {
+  const input = document.getElementById("filterMonth");
+  const placeholder = document.getElementById("monthPlaceholder");
+
+  if (input.value) {
+    placeholder.style.display = "none";
+    input.classList.remove("text-transparent");
+  } else {
+    placeholder.style.display = "block";
+    input.classList.add("text-transparent");
+  }
+}
+async function loadCoachSessions() {
+  const coachId = document.getElementById("coachSelect").value;
+  const month = document.getElementById("filterMonth").value;
+
+  if (!coachId || !month) {
+    return alert("Select coach and month");
+  }
+
+  const res = await fetch(`/api/coach-sessions?coachId=${coachId}&month=${month}`);
+  const data = await res.json();
+
+  renderSessions(data);
+}
+function renderSessions(data) {
+  const table = document.getElementById("payrollTable");
+  table.innerHTML = "";
+
+  data.forEach(session => {
+    table.innerHTML += `
+      <tr>
+        <td class="border p-2">${session.date}</td>
+        <td class="border p-2">${session.type}</td>
+        <td class="border p-2">${session.duration} mins</td>
+        <td class="border p-2">
+          <input type="number"
+            class="border p-1 amount-input"
+            data-session="${session._id}"
+            placeholder="Enter Amount">
+        </td>
+      </tr>
+    `;
+  });
+}
+
+
+  
+
+
+
+
+</script>
+
+</body>
+</html>

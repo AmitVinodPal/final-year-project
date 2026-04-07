@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sessions</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .chessboard-bg {
+    background-color: #ecfdf5; /* very light green */
+    background-image:
+      linear-gradient(45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%);
+    background-size: 56px 56px;
+    background-position: 0 0, 0 28px, 28px -28px, -28px 0px;
+  }
+
+  .card-hover {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(29, 38, 59, 0.1);
+  }
+</style>
+</head>
+
+<body class="chessboard-bg font-sans text-gray-900">
+<div class="flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white text-green-900 flex flex-col p-6 border-r border-emerald-100 shadow-sm">
+    <div class="flex items-center gap-3 mb-6">
+   
+      <span class="text-xl font-bold">Academy Admin</span>
+    </div>
+    <nav class="flex-1">
+      <a href="dashboard.html" class="block py-3 px-4 rounded hover:bg-green-700">Dashboard</a>
+<a href="coaches.html" class="block py-3 px-4 rounded hover:bg-green-700">Manage Coaches</a>
+<a href="students.html" class="block py-3 px-4 rounded hover:bg-green-700">Manage Students</a>
+<a href="branches.html" class="block py-3 px-4 rounded hover:bg-green-700">Manage Branches</a>
+<!-- <a href="admin/images.html" class="block py-3 px-4 rounded hover:bg-green-700">Images Upload</a> -->
+<a href="whatsapp.html" class="block py-3 px-4 rounded hover:bg-green-700">WhatsApp Reminder</a>
+<a href="sessions.html" class="block px-4 py-2 rounded hover:bg-green-700 rounded">Sessions</a>
+<a href="invoices.html" class="block py-3 px-4 rounded hover:bg-green-700">Invoices</a>
+<a href="atttendaancee.html" class="block py-3 px-4 rounded hover:bg-green-700">Attendance</a>
+<a href="payroll.html" class="block py-3 px-4 rounded hover:bg-green-700">Payroll</a>
+<a href="reports.html" class="block py-3 px-4 rounded hover:bg-green-700">Reports</a>
+<a href="settings.html" class="block py-3 px-4 rounded hover:bg-green-700">Settings</a>
+
+    </nav>
+    <a href="#" onclick="logout()" class="mt-6 bg-red-600 py-2 px-4 rounded text-center hover:bg-red-700">Logout</a>
+  </aside>
+
+<main class="flex-1 p-8">
+<h1 class="text-2xl font-bold mb-6">Sessions</h1>
+
+<div class="bg-white p-6 rounded shadow mb-6">
+  <h3 class="font-semibold mb-4">Filter Sessions</h3>
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <input type="date" class="border p-2 rounded">
+    <input placeholder="Coach Name" class="border p-2 rounded">
+    <input placeholder="Batch/Class" class="border p-2 rounded">
+    <select class="border p-2 rounded">
+      <option value="">Session Type</option>
+      <option>Group</option>
+      <option>One-on-One</option>
+    </select>
+  </div>
+</div>
+
+<div class="bg-white p-6 rounded shadow">
+  <table class="w-full border">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="p-2">Date</th>
+        <th class="p-2">Coach</th>
+        <th class="p-2">Batch</th>
+        <th class="p-2">Duration</th>
+        <th class="p-2">Type</th>
+        <th class="p-2">Edited By</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+</main>
+</div>
+<script>
+function logout() {
+  if (confirm("Are you sure you want to logout?")) {
+    window.location.href = "admin-login.html";
+  }
+}
+</script>
+</body>
+</html>

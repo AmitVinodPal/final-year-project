@@ -1,0 +1,2368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gurukul Chess Academy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Logo in top corner - SIMPLE GREEN TEXT ONLY */
+        .corner-logo {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            color: #2E8B57;
+            font-size: 4rem;
+        }
+
+        .logo-text {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #2E8B57;
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* Page switching */
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+
+        /* Header & Navigation */
+        header {
+            display: flex;
+            justify-content: right;
+            padding: 30px 0;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        @media (min-width: 769px) {
+            header {
+                padding-left: 200px;
+            }
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            margin-right:10px;
+            gap: 2px;
+        }
+
+        a {
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        a:hover {
+            color: #2E8B57;
+            background-color: rgba(46, 139, 87, 0.1);
+        }
+
+        .nav-active {
+            color: #2E8B57;
+            background-color: rgba(46, 139, 87, 0.1);
+        }
+
+        .enroll {
+            background-color: #2E8B57;
+            color: white !important;
+            border-radius: 20px;
+            padding: 12px 30px;
+            margin-left: 10p;
+        }
+
+        .enroll:hover {
+            background-color: #26734d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 139, 87, 0.3);
+        }
+
+        /* Admin Dropdown Styles */
+        .admin-dropdown {
+            position: relative;
+        }
+
+        .admin-btn {
+            background-color: #2E8B57;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            background-color: #26734d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 139, 87, 0.3);
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            min-width: 220px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            border-radius: 15px;
+            padding: 10px 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .admin-dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(5px);
+        }
+
+        .dropdown-content a {
+            display: block;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-radius: 0;
+            font-weight: 500;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f8f9fa;
+            color: #2E8B57;
+            padding-left: 25px;
+        }
+
+        .dropdown-content a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #e2e8f0;
+            margin: 8px 0;
+        }
+
+        /* Upload Panel */
+        .upload-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            z-index: 2000;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .upload-panel.active {
+            display: block;
+        }
+
+        .upload-panel h3 {
+            color: #2E8B57;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-panel .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .upload-panel .close-btn:hover {
+            color: #2E8B57;
+        }
+
+        .upload-option {
+            margin-bottom: 20px;
+        }
+
+        .upload-option button {
+            width: 100%;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .upload-option button:hover {
+            background-color: #2E8B57;
+            color: white;
+            border-color: #2E8B57;
+        }
+
+        .upload-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .upload-form.hidden {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #2E8B57;
+            border-radius: 8px;
+            background: #f0fdf4;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #2E8B57;
+            outline: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .upload-submit {
+            background-color: #2E8B57;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+
+        .upload-submit:hover {
+            background-color: #26734d;
+            transform: translateY(-2px);
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background-color: #bb2d3b;
+            transform: translateY(-2px);
+        }
+
+        .preview-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .preview-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+        }
+
+        .preview-item {
+            position: relative;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .preview-item:hover {
+            border-color: #2E8B57;
+            transform: scale(1.05);
+        }
+
+        .preview-item.selected {
+            border-color: #2E8B57;
+            box-shadow: 0 0 0 2px #2E8B57;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        .preview-item .preview-desc {
+            font-size: 0.7rem;
+            padding: 4px;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* HERO PAGE (Home) */
+        .hero {
+            position: relative;
+            height: 800px;
+            margin-top: -50px;
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)),
+                url('https://images.unsplash.com/photo-1529699211952-734e80c4d42b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover no-repeat fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: -10%;
+            width: 120%;
+            height: 150px;
+            background: white;
+            border-radius: 50% 50% 0 0;
+            z-index: 1;
+        }
+
+        .quote-block {
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.9);
+            font-weight: 900;
+            max-width: 900px;
+            margin: 0 auto 40px;
+            line-height: 1.2;
+            z-index: 2;
+        }
+
+        .quote-text {
+            font-size: clamp(2rem, 5vw, 4rem);
+            display: block;
+        }
+
+        .quote-author {
+            font-size: clamp(1.5rem, 3.5vw, 3rem);
+            font-weight: 700;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: clamp(60px, 15vw, 150px);
+            color: white;
+            text-align: center;
+            margin: 40px 0;
+            z-index: 2;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-number {
+            margin: 0;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+        }
+
+        .stat-label {
+            margin: 10px 0 0;
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            font-weight: 600;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+        }
+
+        .hero_button {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+            margin-bottom: 30px;
+            z-index: 2;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 35px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            min-width: 180px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-primary {
+            background-color: #2E8B57;
+            color: white;
+            box-shadow: 0 4px 10px rgba(46, 139, 87, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(46, 139, 87, 0.4);
+        }
+
+        .watch-video-btn {
+            background-color: #2E8B57;
+            color: white;
+            border: 2px solid #2E8B57;
+            box-shadow: 0 4px 10px rgba(46, 139, 87, 0.4);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 35px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            min-width: 180px;
+            cursor: pointer;
+            gap: 10px;
+        }
+
+        .watch-video-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(46, 139, 87, 0.4);
+            background-color: #26734d;
+            color: white;
+        }
+
+        /* Home Page Main Content */
+        #home-main {
+            padding: 100px 20px;
+            text-align: center;
+            background-color: white;
+        }
+
+        #home-main h3 {
+            color: #2E8B57;
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        #home-main h1 {
+            font-size: 3rem;
+            color: #333;
+            margin-bottom: 70px;
+            font-weight: 700;
+        }
+
+        .blocks-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            margin-top: 30px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .blocks-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .block-item {
+            flex: 1;
+            min-width: 300px;
+            max-width: 350px;
+            height: 250px;
+            background: linear-gradient(135deg, #2E8B57, #3cb371);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .block-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, #26734d, #34985f);
+        }
+
+        .block-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .block-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .block-desc {
+            font-size: 1rem;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        /* ABOUT PAGE */
+        #about-page {
+            padding: 80px 20px;
+            background-color: white;
+            min-height: calc(100vh - 200px);
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .page-header h3 {
+            color: #2E8B57;
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .about-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: justify;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .about-content h4 {
+            font-size: 1.5rem;
+            color: #3cb371;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+
+        .about-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        /* COACHES PAGE */
+        #coaches-page {
+            padding: 80px 20px;
+            background-color: white;
+            min-height: calc(100vh - 200px);
+        }
+
+        .coaches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .coach-card {
+            background: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .coach-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .coach-photo-placeholder {
+            width: 140px;
+            height: 140px;
+            background-color: #3cb371;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            color: white;
+            border: 5px solid #2E8B57;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .coach-details {
+            text-align: center;
+            width: 100%;
+        }
+
+        .coach-details h2 {
+            font-size: 1.6rem;
+            color: #2E8B57;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        .coach-title {
+            font-size: 1.1rem;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding: 5px 15px;
+            background: #f0fdf4;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .coach-rating {
+            font-size: 1.1rem;
+            color: #26734d;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding: 3px 12px;
+            background: #e6ffeb;
+            border-radius: 15px;
+            display: inline-block;
+            border: 1px solid #c6ffd2;
+        }
+
+        .coach-experience {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .exp-item {
+            flex: 1;
+            padding: 0 5px;
+        }
+
+        .exp-number {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #2E8B57;
+            display: block;
+        }
+
+        .exp-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .coach-bio {
+            text-align: justify;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #444;
+            margin: 15px 0;
+            padding: 0 5px;
+        }
+
+        .coach-specialties {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .coach-specialties li {
+            background-color: #f0fdf4;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #26734d;
+            border: 1px solid #e6ffeb;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .coach-specialties li:hover {
+            background-color: #2E8B57;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .coach-achievement {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #2E8B57;
+            text-align: left;
+        }
+
+        /* CONTACT PAGE */
+        #contact-page {
+            padding: 80px 20px;
+            background-color: white;
+            min-height: calc(100vh - 200px);
+        }
+
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .contact-info {
+            background: #f8f9fa;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .contact-info h2 {
+            color: #2E8B57;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .contact-icon {
+            background: #2E8B57;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .contact-details h3 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+
+        .contact-details p, .contact-details a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .contact-details a:hover {
+            color: #2E8B57;
+            text-decoration: underline;
+            background-color: transparent;
+        }
+
+        .google-form-section {
+            background: #f8f9fa;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .google-form-section h2 {
+            color: #2E8B57;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .google-form-section p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .google-form-btn {
+            display: inline-block;
+            background-color: #2E8B57;
+            color: white;
+            text-decoration: none;
+            padding: 15px 35px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid #2E8B57;
+        }
+
+        .google-form-btn:hover {
+            background-color: #26734d;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(46, 139, 87, 0.3);
+            color: white;
+        }
+
+        .google-form-btn i {
+            margin-right: 10px;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            background-color: #f8f9fa;
+            padding: 100px 20px;
+            margin-top: 0;
+        }
+
+        .faq-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: justify;
+        }
+
+        .faq-title {
+            color: #2E8B57;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .faq-item {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+        }
+
+        .faq-question {
+            padding: 25px 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background-color: #f9f9f9;
+        }
+
+        .faq-question i {
+            color: #2E8B57;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-answer {
+            padding: 0 30px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            color: #555;
+            line-height: 1.7;
+            background: white;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 0 30px 25px 30px;
+            max-height: 500px;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .whatsapp-button {
+            background-color: #25D366;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 50px auto 0;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-button:hover {
+            background-color: #1da851;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        /* ENROLLMENT MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #2E8B57;
+        }
+
+        .modal-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-title h2 {
+            color: #2E8B57;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-title p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #2E8B57;
+            outline: none;
+        }
+
+        .form-button {
+            width: 100%;
+            padding: 15px;
+            background-color: #2E8B57;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .form-button:hover {
+            background-color: #26734d;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #222;
+            color: white;
+            padding: 60px 20px 30px;
+            margin-top: 0;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section h3 {
+            color: #2E8B57;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background-color: #2E8B57;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            padding: 5px 0;
+            display: inline-block;
+            font-weight: normal;
+            background: none;
+        }
+
+        .footer-links a:hover {
+            color: #2E8B57;
+            transform: translateX(5px);
+        }
+
+        .contact-info-list {
+            list-style: none;
+        }
+
+        .contact-info-list li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .contact-info-list i {
+            color: #2E8B57;
+            margin-top: 3px;
+            font-size: 1.1rem;
+        }
+
+        .footer-logo-section {
+            flex: 2;
+            min-width: 300px;
+        }
+
+        .footer-logo {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #2E8B57;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .footer-logo span {
+            color: white;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 40px auto 0;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .copyright {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* Achievements & Gallery Grids */
+        .achievements-grid, .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .achievement-card, .gallery-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .achievement-card:hover, .gallery-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .achievement-img, .gallery-img {
+            width: 100%;
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+            background-color: #e6ffeb;
+        }
+
+        .achievement-desc, .gallery-desc {
+            padding: 15px;
+            font-size: 1rem;
+            color: #333;
+            line-height: 1.5;
+            background: white;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .corner-logo {
+                top: 15px;
+                left: 15px;
+                transform: scale(0.9);
+            }
+            .logo-text { font-size: 1.3rem; }
+            .logo-icon { font-size: 1.7rem; }
+            header { padding-left: 0; }
+            .hero { height: 700px; }
+            .quote-text { font-size: clamp(1.5rem, 4vw, 3rem); }
+            .quote-author { font-size: clamp(1rem, 3vw, 2.5rem); }
+            .stats-container { flex-direction: column; gap: 30px; }
+            .hero_button { flex-direction: column; gap: 20px; align-items: center; }
+            .blocks-row { flex-direction: column; align-items: center; }
+            .block-item { width: 100%; max-width: 400px; }
+            #home-main h1, .page-header h1 { font-size: 2.5rem; }
+            .coaches-grid { grid-template-columns: 1fr; }
+            .contact-container { grid-template-columns: 1fr; }
+            nav { flex-direction: column; align-items: stretch; }
+            .achievements-grid, .gallery-grid { grid-template-columns: 1fr; }
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Logo in top left corner -->
+    <div class="corner-logo">
+        <img src="logo.jpeg" height="80" style="margin-top: -10px;">
+        <div class="logo-text">GURUKUL<span style="color:#26734d; font-weight: 700; margin-top:-19px;"> CHESS</span> <div style="font-size: 2.5rem ; margin-top: -20px;">ACADEMY</div></div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header>
+        <nav>
+            <a class="nav-link" data-page="home" id="nav-home">Home</a>
+            <a class="nav-link" data-page="about" id="nav-about">About Us</a>
+            <a class="nav-link" data-page="coaches" id="nav-coaches">Our Coaches</a>
+            <a class="nav-link" data-page="achievements">Achievements</a>
+            <a class="nav-link" data-page="gallery">Gallery</a>
+            <a class="nav-link" data-page="contact" id="nav-contact">Contact</a>
+            <a class="enroll" href="https://docs.google.com/forms/d/e/1FAIpQLScJFRgdXwJwDW-Eadz9z129aHSUCwBJ1xUl6SUF89Hcs2PMGQ/viewform" target="_blank">Enroll Now</a>
+            
+            <!-- Admin Dropdown -->
+            <div class="admin-dropdown">
+                <button class="admin-btn">
+                    <i class="fas fa-user-shield"></i> Admin
+                    <i class="fas fa-chevron-down" style="font-size: 0.8rem;"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#" id="uploads-option"><i class="fas fa-upload"></i> Uploads</a>
+                    <div class="dropdown-divider"></div> <a href="admin-login.html"><i class="fas fa-user-cog"></i> Admin Login</a>
+                    <a href="teacher-login.html"><i class="fas fa-chalkboard-teacher"></i> Teacher Login</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Upload Panel -->
+    <div class="upload-panel" id="upload-panel">
+        <button class="close-btn" id="close-upload-panel">&times;</button>
+        <h3><i class="fas fa-upload"></i> Content Management</h3>
+        
+        <div class="upload-option">
+            <button id="show-achievement-upload">
+                <i class="fas fa-trophy"></i> Manage Achievements
+            </button>
+        </div>
+        
+        <div class="upload-option">
+            <button id="show-gallery-upload">
+                <i class="fas fa-images"></i> Manage Gallery
+            </button>
+        </div>
+        
+        <!-- Achievement Management Form -->
+        <div class="upload-form hidden" id="achievement-upload-form">
+            <h4 style="color: #2E8B57; margin-bottom: 15px;">Add Achievement</h4>
+            <div class="form-group">
+                <label>Select Image</label>
+                <input type="file" id="achievement-image" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" id="achievement-desc" placeholder="e.g., Won State Championship 2024">
+            </div>
+            <div class="button-group">
+                <button class="upload-submit" id="submit-achievement">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload
+                </button>
+            </div>
+            
+            <h4 style="color: #2E8B57; margin: 20px 0 15px;">Delete Achievement</h4>
+            <div class="form-group">
+                <label>Select Achievement to Delete</label>
+                <select id="achievement-delete-select">
+                    <option value="">-- Select Achievement --</option>
+                </select>
+            </div>
+            <div class="button-group">
+                <button class="delete-btn" id="delete-achievement">
+                    <i class="fas fa-trash"></i> Delete Selected
+                </button>
+            </div>
+            
+            <!-- Preview Section -->
+            <div class="preview-section">
+                <div class="preview-title">Current Achievements:</div>
+                <div class="preview-grid" id="achievement-preview-grid"></div>
+            </div>
+        </div>
+        
+        <!-- Gallery Management Form -->
+        <div class="upload-form hidden" id="gallery-upload-form">
+            <h4 style="color: #2E8B57; margin-bottom: 15px;">Add Gallery Image</h4>
+            <div class="form-group">
+                <label>Select Image</label>
+                <input type="file" id="gallery-image" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" id="gallery-desc" placeholder="e.g., Summer Chess Camp 2024">
+            </div>
+            <div class="button-group">
+                <button class="upload-submit" id="submit-gallery">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload
+                </button>
+            </div>
+            
+            <h4 style="color: #2E8B57; margin: 20px 0 15px;">Delete Gallery Image</h4>
+            <div class="form-group">
+                <label>Select Image to Delete</label>
+                <select id="gallery-delete-select">
+                    <option value="">-- Select Image --</option>
+                </select>
+            </div>
+            <div class="button-group">
+                <button class="delete-btn" id="delete-gallery">
+                    <i class="fas fa-trash"></i> Delete Selected
+                </button>
+            </div>
+            
+            <!-- Preview Section -->
+            <div class="preview-section">
+                <div class="preview-title">Current Gallery Images:</div>
+                <div class="preview-grid" id="gallery-preview-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOME PAGE -->
+    <div id="home-page" class="page active">
+        <section class="hero">
+            <div class="quote-block">
+                <span class="quote-text">"Every chess master was once a beginner"</span>
+                <span class="quote-author">-Irving Chernev</span>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-number">21+</div>
+                    <div class="stat-label">Years Experience</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Students Trained</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">100+</div>
+                    <div class="stat-label">Tournaments Won</div>
+                </div>
+            </div>
+
+            <div class="hero_button">
+                <button class="btn-primary" id="start-journey-btn">Start Your Journey</button>
+                <a href="https://youtube.com/@aimhrishichavan2483?si=T7KLEdFnuNNnaQTS" target="_blank" rel="noopener noreferrer" class="watch-video-btn">
+                    <i class="fas fa-play-circle"></i> Watch Video
+                </a>
+            </div>
+        </section>
+
+        <main id="home-main">
+            <h3>WHY CHOOSE US</h3>
+            <h1>More Than Just Chess</h1>
+
+            <div class="blocks-container">
+                <div class="blocks-row">
+                    <div class="block-item">
+                        <div class="block-icon">♔</div>
+                        <div class="block-title">Expert Coaches</div>
+                        <div class="block-desc">Learn from FIDE-rated masters with decades of teaching experience.</div>
+                    </div>
+                    <div class="block-item">
+                        <div class="block-icon">🏆</div>
+                        <div class="block-title">Proven Track Record</div>
+                        <div class="block-desc">Our students regularly win state and national level tournaments.</div>
+                    </div>
+                    <div class="block-item">
+                        <div class="block-icon">📚</div>
+                        <div class="block-title">Structured Curriculum</div>
+                        <div class="block-desc">Step-by-step learning path from beginner to advanced levels.</div>
+                    </div>
+                </div>
+                
+                <div class="blocks-row">
+                    <div class="block-item">
+                        <div class="block-icon">💻</div>
+                        <div class="block-title">Online & Offline</div>
+                        <div class="block-desc">Flexible learning options with both in-person and virtual classes.</div>
+                    </div>
+                    <div class="block-item">
+                        <div class="block-icon">🧠</div>
+                        <div class="block-title">Cognitive Development</div>
+                        <div class="block-desc">Enhance memory, concentration, and problem-solving skills.</div>
+                    </div>
+                    <div class="block-item">
+                        <div class="block-icon">👨‍👩‍👧‍👦</div>
+                        <div class="block-title">Community</div>
+                        <div class="block-desc">Join a thriving community of chess enthusiasts of all ages.</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <div class="faq-container">
+                <h2 class="faq-title">Frequently Asked Questions</h2>
+                
+                <div class="faq-item active">
+                    <div class="faq-question">
+                        What is the ideal age to start learning chess?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Chess can be learned at any age! We have students from 5 years to 65 years. For children, we recommend starting between 5-7 years when cognitive development is rapid, but we've seen success stories at all ages.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Do I need to own a chess board to start?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Not necessarily for the first few sessions. We provide digital boards for online classes. However, we recommend purchasing a standard tournament board once you decide to continue regular training.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        How long does it take to become good at chess?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        With consistent practice (3-4 hours weekly), most students show significant improvement within 3-6 months. To reach competitive levels, 1-2 years of dedicated training is typical. Our structured curriculum accelerates this process.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Can chess really help in academic performance?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Absolutely! Studies show chess improves concentration, logical thinking, problem-solving skills, and memory—all crucial for academic success. Many of our students report better grades in mathematics and sciences.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        What's the class size for group sessions?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        We maintain small batch sizes of 6-8 students for personalized attention. For beginners, we sometimes have slightly larger groups (up to 12) but always with multiple coaches to ensure individual guidance.
+                    </div>
+                </div>
+                
+                <button class="whatsapp-button" onclick="window.open('https://wa.me/919876543210?text=Hello%20Gurukul%20Chess%20Academy,%20I%20have%20a%20question', '_blank')">
+                    <i class="fab fa-whatsapp"></i> Chat with us on WhatsApp
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- ABOUT PAGE -->
+    <div id="about-page" class="page">
+        <div class="page-header">
+            <h3>Our Story</h3>
+            <h1>About Gurukul Chess Academy</h1>
+        </div>
+        
+        <div class="about-content">
+            <h4>Our Journey</h4>
+            <p>Founded in 2003, Gurukul Chess Academy began as a humble initiative by Grandmaster Rohan Sharma with a vision to make chess education accessible to everyone. What started in a small room with just 5 students has now grown into one of the most respected chess academies in the country, training over 1000 students across multiple cities.</p>
+            
+            <h4>Our Philosophy</h4>
+            <p>At Gurukul, we believe chess is more than just a game—it's a tool for cognitive development, character building, and life skills training. Our teaching methodology blends ancient Indian gurukul traditions with modern pedagogical techniques, creating a holistic learning environment.</p>
+            
+            <h4>The Gurukul Difference</h4>
+            <p>Unlike conventional chess coaching centers, we focus on personalized mentorship. Each student gets a customized learning plan based on their strengths, weaknesses, and goals. Our coaches don't just teach moves; they mentor students to think strategically, handle pressure, and learn from both victories and defeats.</p>
+            
+            <h4>Infrastructure & Facilities</h4>
+            <p>Our centers are equipped with tournament-standard chess boards, digital demonstration boards, a comprehensive chess library, and video analysis facilities. For online students, we provide access to our exclusive learning portal with recorded lessons, practice exercises, and interactive tools.</p>
+            
+            <h4>Community Impact</h4>
+            <p>Beyond competitive training, we run community outreach programs introducing chess in underprivileged schools, organize free weekend workshops, and host the annual "Gurukul Open" tournament that attracts players from across the region. We're proud to have made chess a vibrant part of our community's cultural fabric.</p>
+        </div>
+    </div>
+
+    <!-- COACHES PAGE -->
+    <div id="coaches-page" class="page">
+        <div class="page-header">
+            <h3>Meet Our Masters</h3>
+            <h1>Our Expert Coaches</h1>
+        </div>
+        
+        <div class="coaches-grid">
+            <!-- COACH 1: Mr. Hrishikesh Chavan -->
+            <div class="coach-card">
+                <div class="coach-photo-placeholder" style="background-color: #2E8B57;">&#9818;</div>
+                <div class="coach-details">
+                    <h2>Mr. Hrishikesh Chavan</h2>
+                    <div class="coach-title">Head Coach, FIDE Instructor & Arena International Master</div>
+                    <div class="coach-rating">Peak ELO 2082</div>
+                    <div class="coach-experience">
+                        <div class="exp-item"><span class="exp-number">20+</span><span class="exp-label">Years Experience</span></div>
+                        <div class="exp-item"><span class="exp-number">1000+</span><span class="exp-label">Students Trained</span></div>
+                        <div class="exp-item"><span class="exp-number">Certified</span><span class="exp-label">FIDE Instructor</span></div>
+                    </div>
+                    <p class="coach-bio">A master coach with over two decades of experience, his main forte is creating a love for the game in students by sharing chess stories. He builds customized opening repertoires and trains FIDE rated players in advanced positional, structural and tactical concepts.</p>
+                    <div class="coach-achievement"><strong>Notable Achievements:</strong> National Arbiter, Correspondence Chess Expert</div>
+                    <ul class="coach-specialties">
+                        <li>Opening Repertoires</li>
+                        <li>Advanced Positional Play</li>
+                        <li>Tactical Concepts</li>
+                        <li>FIDE Player Training</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- COACH 2: Ms. Prajakta Vesvikar -->
+            <div class="coach-card">
+                <div class="coach-photo-placeholder" style="background-color: #3cb371;">&#9819;</div>
+                <div class="coach-details">
+                    <h2>Ms. Prajakta Vesvikar</h2>
+                    <div class="coach-title">Versatile Professional Chess Trainer</div>
+                    <div class="coach-rating">14 Years Experience</div>
+                    <div class="coach-experience">
+                        <div class="exp-item"><span class="exp-number">14</span><span class="exp-label">Years Experience</span></div>
+                        <div class="exp-item"><span class="exp-number">Expert</span><span class="exp-label">Personalized Training</span></div>
+                        <div class="exp-item"><span class="exp-number">Versatile</span><span class="exp-label">Teaching Methods</span></div>
+                    </div>
+                    <p class="coach-bio">A versatile coach with a talent for connecting with students and tailoring her teaching methods to their individual needs. Her personalized training plans and patient demeanor create a positive and effective learning experience.</p>
+                    <div class="coach-achievement"><strong>Specialty:</strong> Connecting with students and personalized training plans</div>
+                    <ul class="coach-specialties">
+                        <li>Personalized Training</li>
+                        <li>Student Connection</li>
+                        <li>Individualized Methods</li>
+                        <li>Positive Learning</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- COACH 3: Ms. Daphne Arumuga -->
+            <div class="coach-card">
+                <div class="coach-photo-placeholder" style="background-color: #2E8B57;">&#9820;</div>
+                <div class="coach-details">
+                    <h2>Ms. Daphne Arumuga</h2>
+                    <div class="coach-title">International FIDE Rated Coach</div>
+                    <div class="coach-rating">4 Years Experience</div>
+                    <div class="coach-experience">
+                        <div class="exp-item"><span class="exp-number">4</span><span class="exp-label">Years Experience</span></div>
+                        <div class="exp-item"><span class="exp-number">International</span><span class="exp-label">FIDE Rated</span></div>
+                        <div class="exp-item"><span class="exp-number">Patient</span><span class="exp-label">Coach</span></div>
+                    </div>
+                    <p class="coach-bio">A patient and encouraging coach who instills confidence in her students. Her emphasis on developing critical thinking skills and adaptability prepares students for a wide range of chess situations.</p>
+                    <div class="coach-achievement"><strong>Focus:</strong> Critical thinking skills and adaptability</div>
+                    <ul class="coach-specialties">
+                        <li>Critical Thinking</li>
+                        <li>Adaptability</li>
+                        <li>Confidence Building</li>
+                        <li>Strategic Preparation</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- COACH 4: Ms. Dhwani Vora -->
+            <div class="coach-card">
+                <div class="coach-photo-placeholder" style="background-color: #3cb371;">&#9821;</div>
+                <div class="coach-details">
+                    <h2>Ms. Dhwani Vora</h2>
+                    <div class="coach-title">Mindset & Sports Psychology Specialist</div>
+                    <div class="coach-rating">4 Years Experience</div>
+                    <div class="coach-experience">
+                        <div class="exp-item"><span class="exp-number">4</span><span class="exp-label">Years Experience</span></div>
+                        <div class="exp-item"><span class="exp-number">International</span><span class="exp-label">FIDE Rated</span></div>
+                        <div class="exp-item"><span class="exp-number">Sports</span><span class="exp-label">Psychology</span></div>
+                    </div>
+                    <p class="coach-bio">With a strong background in sports psychology, Ms. Dhwani specializes in helping students develop a winning mindset. Her coaching style focuses on mental resilience, self-belief, and effective decision-making under pressure.</p>
+                    <div class="coach-achievement"><strong>Specialty:</strong> Sports psychology and winning mindset development</div>
+                    <ul class="coach-specialties">
+                        <li>Sports Psychology</li>
+                        <li>Mental Resilience</li>
+                        <li>Self-Belief</li>
+                        <li>Decision Making</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- COACH 5: Ms. Aditi Yadav -->
+            <div class="coach-card">
+                <div class="coach-photo-placeholder" style="background-color: #2E8B57;">&#9822;</div>
+                <div class="coach-details">
+                    <h2>Ms. Aditi Yadav</h2>
+                    <div class="coach-title">Youth Specialist & Arena Candidate Master</div>
+                    <div class="coach-rating">ACM & 3 Years Experience</div>
+                    <div class="coach-experience">
+                        <div class="exp-item"><span class="exp-number">3</span><span class="exp-label">Years Experience</span></div>
+                        <div class="exp-item"><span class="exp-number">Arena CM</span><span class="exp-label">Candidate Master</span></div>
+                        <div class="exp-item"><span class="exp-number">Youth</span><span class="exp-label">Specialist</span></div>
+                    </div>
+                    <p class="coach-bio">A patient and supportive coach who excels in working with younger students, instilling a love for the game from an early age. Her engaging methods make concepts fun and accessible, building a strong foundation.</p>
+                    <div class="coach-achievement"><strong>Specialty:</strong> Youth coaching with fun and engaging methods</div>
+                    <ul class="coach-specialties">
+                        <li>Youth Coaching</li>
+                        <li>Fun Learning</li>
+                        <li>Foundation Building</li>
+                        <li>Engaging Methods</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- COACH 6: Ms. Siddhi Kamble -->
+            <div class="coach-card">
+                <div class="coach-photo-placeholder" style="background-color: #3cb371;">&#9823;</div>
+                <div class="coach-details">
+                    <h2>Ms. Siddhi Kamble</h2>
+                    <div class="coach-title">Enthusiastic & Interactive Trainer</div>
+                    <div class="coach-rating">3 Years Experience</div>
+                    <div class="coach-experience">
+                        <div class="exp-item"><span class="exp-number">3</span><span class="exp-label">Years Experience</span></div>
+                        <div class="exp-item"><span class="exp-number">Dynamic</span><span class="exp-label">Learning Environment</span></div>
+                        <div class="exp-item"><span class="exp-number">Interactive</span><span class="exp-label">Teaching</span></div>
+                    </div>
+                    <p class="coach-bio">An enthusiastic and energetic coach who creates a dynamic learning environment that motivates students to excel. Her interactive teaching style incorporates a blend of theory, practical exercises, and fun chess puzzles.</p>
+                    <div class="coach-achievement"><strong>Specialty:</strong> Dynamic learning environments and interactive teaching</div>
+                    <ul class="coach-specialties">
+                        <li>Dynamic Learning</li>
+                        <li>Interactive Teaching</li>
+                        <li>Chess Puzzles</li>
+                        <li>Theory & Practice</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- COACH 7: Mr. Om Gada -->
+            <div class="coach-card">
+                <div class="coach-photo-placeholder" style="background-color: #2E8B57;">&#9813;</div>
+                <div class="coach-details">
+                    <h2>Mr. Om Gada</h2>
+                    <div class="coach-title">International FIDE Rated Trainer</div>
+                    <div class="coach-rating">2 Years Experience</div>
+                    <div class="coach-experience">
+                        <div class="exp-item"><span class="exp-number">2</span><span class="exp-label">Years Experience</span></div>
+                        <div class="exp-item"><span class="exp-number">International</span><span class="exp-label">FIDE Rated</span></div>
+                        <div class="exp-item"><span class="exp-number">Winning</span><span class="exp-label">Mindset</span></div>
+                    </div>
+                    <p class="coach-bio">With a strong background in Chess, Mr. Om specializes in helping students develop a winning mindset. His coaching style focuses on building mental resilience, self-belief, and effective decision-making under pressure.</p>
+                    <div class="coach-achievement"><strong>Focus:</strong> Winning mindset and effective decision-making</div>
+                    <ul class="coach-specialties">
+                        <li>Winning Mindset</li>
+                        <li>Mental Resilience</li>
+                        <li>Decision Making</li>
+                        <li>Self-Belief</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <p style="margin-top: 50px; text-align: center; font-size: 1.1rem; color: #555;">... and a team of dedicated associate coaches!</p>
+    </div>
+
+    <!-- ACHIEVEMENTS PAGE -->
+    <div id="achievements-page" class="page">
+        <div class="page-header">
+            <h3>Our Laurels</h3>
+            <h1>Achievements</h1>
+        </div>
+        <div id="achievements-grid" class="achievements-grid"></div>
+        <p id="no-achievements" style="text-align: center; color: #777; margin-top: 40px;">No achievements yet. Use Uploads in Admin panel to add achievements.</p>
+    </div>
+
+    <!-- GALLERY PAGE -->
+    <div id="gallery-page" class="page">
+        <div class="page-header">
+            <h3>Moments</h3>
+            <h1>Gallery</h1>
+        </div>
+        <div id="gallery-grid" class="gallery-grid"></div>
+        <p id="no-gallery" style="text-align: center; color: #777; margin-top: 40px;">No images in gallery yet. Use Uploads in Admin panel to add images.</p>
+    </div>
+
+    <!-- CONTACT PAGE -->
+    <div id="contact-page" class="page">
+        <div class="page-header">
+            <h3>Get In Touch</h3>
+            <h1>Contact Us</h1>
+        </div>
+        
+        <div class="contact-container">
+            <div class="contact-info">
+                <h2>Contact Information</h2>
+                
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="contact-details">
+                        <h3>Main Center</h3>
+                        <p>Gurukul Chess Academy<br>123 Chess Boulevard, Mind Sports District<br>Mumbai, Maharashtra 400001</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+                    <div class="contact-details">
+                        <h3>Phone Numbers</h3>
+                        <p>Admissions: +91 98765 43210<br>General Enquiry: +91 98765 43211<br>Mon-Sat: 9 AM - 7 PM</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                    <div class="contact-details">
+                        <h3>Email Address</h3>
+                        <p>Admissions: <a href="mailto:admissions@gurukulchess.com">admissions@gurukulchess.com</a><br>Coaching: <a href="mailto:coaching@gurukulchess.com">coaching@gurukulchess.com</a><br>General: <a href="mailto:info@gurukulchess.com">info@gurukulchess.com</a></p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-clock"></i></div>
+                    <div class="contact-details">
+                        <h3>Operating Hours</h3>
+                        <p>Weekdays: 7 AM - 9 PM<br>Weekends: 8 AM - 8 PM<br>Holiday Classes: As announced</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="google-form-section">
+                <h2>Contact Form</h2>
+                <p>Have questions or want to learn more about our programs? Fill out our contact form and we'll get back to you within 24 hours.</p>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLScJFRgdXwJwDW-Eadz9z129aHSUCwBJ1xUl6SUF89Hcs2PMGQ/viewform" target="_blank" class="google-form-btn">
+                    <i class="fas fa-file-alt"></i> Open Contact Form
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ENROLLMENT MODAL -->
+    <div class="modal-overlay" id="enrollment-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">&times;</button>
+            
+            <div class="modal-title">
+                <h2>Start Your Chess Journey</h2>
+                <p>Fill out this form and we'll contact you within 24 hours</p>
+            </div>
+            
+            <form id="enrollment-form">
+                <div class="form-group">
+                    <label for="student-name">Student's Name *</label>
+                    <input type="text" id="student-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="student-age">Student's Age *</label>
+                    <input type="number" id="student-age" min="4" max="80" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="parent-name">Parent's Name (if minor)</label>
+                    <input type="text" id="parent-name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="contact-number">Contact Number *</label>
+                    <input type="tel" id="contact-number" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="experience-level">Chess Experience Level *</label>
+                    <select id="experience-level" required>
+                        <option value="">Select Level</option>
+                        <option value="beginner">Absolute Beginner</option>
+                        <option value="novice">Knows basic rules</option>
+                        <option value="intermediate">Played casually</option>
+                        <option value="advanced">Tournament experience</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="preferred-mode">Preferred Mode *</label>
+                    <select id="preferred-mode" required>
+                        <option value="">Select Mode</option>
+                        <option value="online">Online Classes</option>
+                        <option value="offline">In-Person Classes</option>
+                        <option value="both">Flexible (Both)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="goals">Learning Goals</label>
+                    <textarea id="goals" rows="3" placeholder="e.g., Competitive play, cognitive development, hobby..."></textarea>
+                </div>
+                
+                <button type="submit" class="form-button">Submit Enrollment Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section footer-logo-section">
+                <div class="footer-logo">GURUKUL<span> CHESS</span></div>
+                <p style="color: #ddd; line-height: 1.7; margin-bottom: 20px;">Transforming minds through the royal game since 2003. Our mission is to make chess education accessible, enjoyable, and rewarding for all age groups.</p>
+                <div style="display: flex; gap: 15px; margin-top: 20px;">
+                    <a href="#" style="color: white; font-size: 1.3rem;"><i class="fab fa-facebook"></i></a>
+                    <a href="#" style="color: white; font-size: 1.3rem;"><i class="fab fa-twitter"></i></a>
+                    <a href="#" style="color: white; font-size: 1.3rem;"><i class="fab fa-instagram"></i></a>
+                    <a href="#" style="color: white; font-size: 1.3rem;"><i class="fab fa-youtube"></i></a>
+                    <a href="#" style="color: white; font-size: 1.3rem;"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#" class="nav-link" data-page="home">Home</a></li>
+                    <li><a href="#" class="nav-link" data-page="about">About Us</a></li>
+                    <li><a href="#" class="nav-link" data-page="coaches">Our Coaches</a></li>
+                    <li><a href="#" class="nav-link" data-page="achievements">Achievements</a></li>
+                    <li><a href="#" class="nav-link" data-page="gallery">Gallery</a></li>
+                    <li><a href="#" class="nav-link" data-page="contact">Contact</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Programs</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Beginner's Program (Age 5+)</a></li>
+                    <li><a href="#">Intermediate Training</a></li>
+                    <li><a href="#">Advanced Masterclass</a></li>
+                    <li><a href="#">Tournament Preparation</a></li>
+                    <li><a href="#">Corporate Chess Workshops</a></li>
+                    <li><a href="#">Summer Chess Camp</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <ul class="contact-info-list">
+                    <li><i class="fas fa-map-marker-alt"></i><span>123 Chess Boulevard, Mumbai 400001</span></li>
+                    <li><i class="fas fa-phone-alt"></i><span>+91 98765 43210</span></li>
+                    <li><i class="fas fa-envelope"></i><span>info@gurukulchess.com</span></li>
+                    <li><i class="fas fa-clock"></i><span>Mon-Sat: 7 AM - 9 PM</span></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="copyright">&copy; 2023 Gurukul Chess Academy. All rights reserved.</div>
+            <div style="display: flex; gap: 20px;">
+                <a href="#" style="color: #aaa; text-decoration: none; font-size: 0.9rem;">Privacy Policy</a>
+                <a href="#" style="color: #aaa; text-decoration: none; font-size: 0.9rem;">Terms of Service</a>
+                <a href="#" style="color: #aaa; text-decoration: none; font-size: 0.9rem;">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Page Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pageId = this.getAttribute('data-page');
+                
+                document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('nav-active'));
+                this.classList.add('nav-active');
+                
+                document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+                
+                if (pageId === 'home') document.getElementById('home-page').classList.add('active');
+                else if (pageId === 'about') document.getElementById('about-page').classList.add('active');
+                else if (pageId === 'coaches') document.getElementById('coaches-page').classList.add('active');
+                else if (pageId === 'achievements') {
+                    document.getElementById('achievements-page').classList.add('active');
+                    renderAchievements();
+                } else if (pageId === 'gallery') {
+                    document.getElementById('gallery-page').classList.add('active');
+                    renderGallery();
+                } else if (pageId === 'contact') document.getElementById('contact-page').classList.add('active');
+                
+                window.scrollTo(0, 0);
+            });
+        });
+
+        document.getElementById('nav-home').classList.add('nav-active');
+
+        // Admin Dropdown Options
+        document.getElementById('uploads-option').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('upload-panel').classList.add('active');
+            updateAllPreviews();
+        });
+
+        document.getElementById('admin-login-option').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Admin Login page would open here');
+        });
+
+        document.getElementById('teacher-login-option').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Teacher Login page would open here');
+        });
+
+        // Close Upload Panel
+        document.getElementById('close-upload-panel').addEventListener('click', function() {
+            document.getElementById('upload-panel').classList.remove('active');
+            document.getElementById('achievement-upload-form').classList.add('hidden');
+            document.getElementById('gallery-upload-form').classList.add('hidden');
+        });
+
+        // Show Achievement Management Form
+        document.getElementById('show-achievement-upload').addEventListener('click', function() {
+            document.getElementById('achievement-upload-form').classList.remove('hidden');
+            document.getElementById('gallery-upload-form').classList.add('hidden');
+            updateAchievementPreview();
+        });
+
+        // Show Gallery Management Form
+        document.getElementById('show-gallery-upload').addEventListener('click', function() {
+            document.getElementById('gallery-upload-form').classList.remove('hidden');
+            document.getElementById('achievement-upload-form').classList.add('hidden');
+            updateGalleryPreview();
+        });
+
+        // Enrollment Modal
+        const startJourneyBtn = document.getElementById('start-journey-btn');
+        const enrollmentModal = document.getElementById('enrollment-modal');
+        const modalClose = document.getElementById('modal-close');
+        
+        startJourneyBtn?.addEventListener('click', () => {
+            enrollmentModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        modalClose?.addEventListener('click', () => {
+            enrollmentModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+        
+        enrollmentModal?.addEventListener('click', (e) => {
+            if (e.target === enrollmentModal) {
+                enrollmentModal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        document.getElementById('enrollment-form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for your interest! We will contact you within 24 hours.');
+            enrollmentModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            this.reset();
+        });
+
+        // FAQ Accordion
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const faqItem = question.parentElement;
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    if (item !== faqItem) item.classList.remove('active');
+                });
+                faqItem.classList.toggle('active');
+            });
+        });
+
+        // ========== ACHIEVEMENTS MANAGEMENT ==========
+        let achievements = JSON.parse(localStorage.getItem('gurukul_achievements')) || [];
+
+        function renderAchievements() {
+            const grid = document.getElementById('achievements-grid');
+            const noMsg = document.getElementById('no-achievements');
+            if (!grid) return;
+            
+            if (achievements.length === 0) {
+                grid.innerHTML = '';
+                noMsg.style.display = 'block';
+                return;
+            }
+            noMsg.style.display = 'none';
+            
+            grid.innerHTML = achievements.sort((a,b) => b.timestamp - a.timestamp).map(ach => `
+                <div class="achievement-card">
+                    <div class="achievement-img" style="background-image: url('${ach.imageData}'); background-size: cover; background-position: center;"></div>
+                    <div class="achievement-desc">${ach.desc}</div>
+                </div>
+            `).join('');
+            
+            updateAchievementDeleteSelect();
+            updateAchievementPreview();
+        }
+
+        function updateAchievementDeleteSelect() {
+            const select = document.getElementById('achievement-delete-select');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">-- Select Achievement --</option>' +
+                achievements.map(ach => `<option value="${ach.id}">${ach.desc}</option>`).join('');
+        }
+
+        function updateAchievementPreview() {
+            const previewGrid = document.getElementById('achievement-preview-grid');
+            if (!previewGrid) return;
+            
+            if (achievements.length === 0) {
+                previewGrid.innerHTML = '<p style="color: #777; text-align: center;">No achievements yet</p>';
+                return;
+            }
+            
+            previewGrid.innerHTML = achievements.slice(0, 6).map(ach => `
+                <div class="preview-item" title="${ach.desc}">
+                    <img src="${ach.imageData}" alt="${ach.desc}">
+                    <div class="preview-desc">${ach.desc.substring(0, 15)}${ach.desc.length > 15 ? '...' : ''}</div>
+                </div>
+            `).join('');
+        }
+
+        // Add Achievement
+        document.getElementById('submit-achievement')?.addEventListener('click', () => {
+            const fileInput = document.getElementById('achievement-image');
+            const desc = document.getElementById('achievement-desc').value.trim();
+            
+            if (!fileInput.files[0] || !desc) {
+                alert('Please select an image and enter a description');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                achievements.push({
+                    id: Date.now() + '-' + Math.random().toString(36).substr(2,9),
+                    imageData: e.target.result,
+                    desc: desc,
+                    timestamp: Date.now()
+                });
+                localStorage.setItem('gurukul_achievements', JSON.stringify(achievements));
+                
+                fileInput.value = '';
+                document.getElementById('achievement-desc').value = '';
+                
+                alert('Achievement added successfully!');
+                
+                if (document.getElementById('achievements-page').classList.contains('active')) {
+                    renderAchievements();
+                }
+                updateAchievementDeleteSelect();
+                updateAchievementPreview();
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        });
+
+        // Delete Achievement
+        document.getElementById('delete-achievement')?.addEventListener('click', () => {
+            const select = document.getElementById('achievement-delete-select');
+            const selectedId = select.value;
+            
+            if (!selectedId) {
+                alert('Please select an achievement to delete');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to delete this achievement?')) {
+                achievements = achievements.filter(a => a.id !== selectedId);
+                localStorage.setItem('gurukul_achievements', JSON.stringify(achievements));
+                
+                if (document.getElementById('achievements-page').classList.contains('active')) {
+                    renderAchievements();
+                }
+                updateAchievementDeleteSelect();
+                updateAchievementPreview();
+                alert('Achievement deleted successfully!');
+            }
+        });
+
+        // ========== GALLERY MANAGEMENT ==========
+        let galleryItems = JSON.parse(localStorage.getItem('gurukul_gallery')) || [];
+
+        function renderGallery() {
+            const grid = document.getElementById('gallery-grid');
+            const noMsg = document.getElementById('no-gallery');
+            if (!grid) return;
+            
+            if (galleryItems.length === 0) {
+                grid.innerHTML = '';
+                noMsg.style.display = 'block';
+                return;
+            }
+            noMsg.style.display = 'none';
+            
+            grid.innerHTML = galleryItems.sort((a,b) => b.timestamp - a.timestamp).map(item => `
+                <div class="gallery-card">
+                    <div class="gallery-img" style="background-image: url('${item.imageData}'); background-size: cover; background-position: center;"></div>
+                    <div class="gallery-desc">${item.desc}</div>
+                </div>
+            `).join('');
+            
+            updateGalleryDeleteSelect();
+            updateGalleryPreview();
+        }
+
+        function updateGalleryDeleteSelect() {
+            const select = document.getElementById('gallery-delete-select');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">-- Select Image --</option>' +
+                galleryItems.map(item => `<option value="${item.id}">${item.desc}</option>`).join('');
+        }
+
+        function updateGalleryPreview() {
+            const previewGrid = document.getElementById('gallery-preview-grid');
+            if (!previewGrid) return;
+            
+            if (galleryItems.length === 0) {
+                previewGrid.innerHTML = '<p style="color: #777; text-align: center;">No gallery images yet</p>';
+                return;
+            }
+            
+            previewGrid.innerHTML = galleryItems.slice(0, 6).map(item => `
+                <div class="preview-item" title="${item.desc}">
+                    <img src="${item.imageData}" alt="${item.desc}">
+                    <div class="preview-desc">${item.desc.substring(0, 15)}${item.desc.length > 15 ? '...' : ''}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateAllPreviews() {
+            updateAchievementPreview();
+            updateGalleryPreview();
+        }
+
+        // Add Gallery Image
+        document.getElementById('submit-gallery')?.addEventListener('click', () => {
+            const fileInput = document.getElementById('gallery-image');
+            const desc = document.getElementById('gallery-desc').value.trim();
+            
+            if (!fileInput.files[0] || !desc) {
+                alert('Please select an image and enter a description');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                galleryItems.push({
+                    id: Date.now() + '-' + Math.random().toString(36).substr(2,9),
+                    imageData: e.target.result,
+                    desc: desc,
+                    timestamp: Date.now()
+                });
+                localStorage.setItem('gurukul_gallery', JSON.stringify(galleryItems));
+                
+                fileInput.value = '';
+                document.getElementById('gallery-desc').value = '';
+                
+                alert('Gallery image added successfully!');
+                
+                if (document.getElementById('gallery-page').classList.contains('active')) {
+                    renderGallery();
+                }
+                updateGalleryDeleteSelect();
+                updateGalleryPreview();
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        });
+
+        // Delete Gallery Image
+        document.getElementById('delete-gallery')?.addEventListener('click', () => {
+            const select = document.getElementById('gallery-delete-select');
+            const selectedId = select.value;
+            
+            if (!selectedId) {
+                alert('Please select an image to delete');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to delete this image?')) {
+                galleryItems = galleryItems.filter(g => g.id !== selectedId);
+                localStorage.setItem('gurukul_gallery', JSON.stringify(galleryItems));
+                
+                if (document.getElementById('gallery-page').classList.contains('active')) {
+                    renderGallery();
+                }
+                updateGalleryDeleteSelect();
+                updateGalleryPreview();
+                alert('Gallery image deleted successfully!');
+            }
+        });
+
+        // Initial render
+        renderAchievements();
+        renderGallery();
+
+        // Close panel when clicking outside
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('upload-panel');
+            if (panel.classList.contains('active') && !panel.contains(e.target) && !e.target.closest('.admin-dropdown')) {
+                panel.classList.remove('active');
+                document.getElementById('achievement-upload-form').classList.add('hidden');
+                document.getElementById('gallery-upload-form').classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

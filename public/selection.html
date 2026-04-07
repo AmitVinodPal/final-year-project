@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gurukul Attendance Portal</title>
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .chessboard-bg {
+      background-color: #ecfdf5;
+      background-image:
+        linear-gradient(45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%);
+      background-size: 56px 56px;
+      background-position: 0 0, 0 28px, 28px -28px, -28px 0px;
+    }
+    
+    .card-hover {
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 30px rgba(29, 38, 59, 0.1);
+    }
+  </style>
+
+  <style>
+    body {
+      font-family: "Inter", sans-serif;
+    }
+  </style>
+</head>
+
+<body class="chessboard-bg font-sans text-gray-900">
+
+<!-- ================= SCRIPT ================= -->
+
+<script>
+  // get branch
+  const params = new URLSearchParams(window.location.search);
+
+  //branch save
+  const branch =
+    params.get("branch") || localStorage.getItem("branch");
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const title = document.getElementById("branchTitle");
+
+    if (branch) {
+      title.innerText = branch + " Branch";
+    } else {
+      title.innerText = "Select an Option";
+    }
+  });
+
+
+  function submitTeacherLogin(page) {
+    if (!branch) {
+      alert("Please select branch first");
+      return;
+    }
+
+    // branch ko save rakho
+    localStorage.setItem("branch", branch);
+
+    // next page
+    window.location.href = `${page}?branch=${encodeURIComponent(branch)}`;
+  }
+//logout
+function goBack() {
+  const result = confirm("Are you sure you want to logout?");
+
+  if (result === true) {
+    // OK clicked
+    localStorage.removeItem("teacherId");
+    localStorage.removeItem("teacherName");
+    window.location.href = "teacher-login.html";
+  }
+ 
+}
+</script>
+
+
+
+<!-- ================= HEADER ================= -->
+<div class="text-center mt-8">
+  <div class="flex justify-center items-center space-x-4">
+    <img src="images/logo.jpg" class="w-16 h-16" alt="Logo" />
+    <h1 class="text-3xl font-extrabold text-green-900 tracking-wide">
+      Gurukul Chess Academy ®
+    </h1>
+  </div>
+
+  <p class="mt-2 text-sm font-semibold text-gray-700">
+    EVERY CHESS MASTER WAS ONCE A BEGINNER
+  </p>
+  <p class="text-xs text-gray-500">– IRVING CHERNEV</p>
+
+  <div class="flex items-center justify-center mt-4 w-full max-w-lg mx-auto">
+    <div class="flex-1 border-t border-gray-400"></div>
+    <span class="px-3 text-gray-600 text-sm">♟</span>
+    <div class="flex-1 border-t border-gray-400"></div>
+  </div>
+</div>
+
+<!-- ================= MAIN ================= -->
+<div class="w-full max-w-lg bg-white shadow-xl rounded-2xl
+            p-10 border-t-4 border-green-700 mt-8 mx-auto">
+<button onclick="goBack()"
+  class="px-3 py-1.5 bg-green-700 text-white text-sm
+         rounded-full hover:bg-green-800 transition">
+  ← Logout
+</button>
+
+
+    
+
+  <!-- Branch Title -->
+  <h2
+    id="branchTitle"
+    class="mt-10 text-3xl font-extrabold text-green-900 text-center"
+  ></h2>
+
+  <!-- Subtitle -->
+  <p class="text-center text-gray-500 mt-2 mb-10">
+
+    Select where you want to proceed
+  </p>
+
+<!-- Action Buttons -->
+<div class="flex flex-col gap-6">
+
+  <!-- Attendance -->
+  <button
+    onclick="submitTeacherLogin('attendance.html')"
+    class="py-5 text-lg font-semibold rounded-xl
+           bg-green-800 text-white
+           shadow-lg hover:bg-green-900
+           hover:scale-[1.03] transition-all
+           flex items-center justify-center gap-3">
+    <i class="fa-solid fa-calendar-check"></i>
+    Mark Attendance
+  </button>
+
+  <!-- Coach Panel -->
+  <button
+    onclick="submitTeacherLogin('coach-dashboard.html')"
+    class="py-5 text-lg font-semibold rounded-xl
+           bg-green-800 text-white
+           shadow-lg hover:bg-green-900
+           hover:scale-[1.03] transition-all
+           flex items-center justify-center gap-3">
+    <i class="fas fa-chalkboard-teacher"></i>
+    Coaches Panel
+  </button>
+
+</div>
+
+
+</div>
+
+
+
+</body>
+</html>

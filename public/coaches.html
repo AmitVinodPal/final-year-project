@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Coaches</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .chessboard-bg {
+    background-color: #ecfdf5; /* very light green */
+    background-image:
+      linear-gradient(45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(22, 101, 52, 0.06) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(22, 101, 52, 0.06) 75%);
+    background-size: 56px 56px;
+    background-position: 0 0, 0 28px, 28px -28px, -28px 0px;
+  }
+
+  .card-hover {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(29, 38, 59, 0.1);
+  }
+</style>
+</head>
+
+<body class="chessboard-bg font-sans text-gray-900">
+<div class="flex min-h-screen">
+
+  <!-- SIDEBAR (shared admin theme) -->
+  <aside class="w-72 bg-[#166534] text-white flex flex-col p-6 shadow-xl">
+    <div class="flex items-center gap-3 mb-8">
+      <div class="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">♟</div>
+      <div>
+        <div class="text-lg font-extrabold leading-tight">Academy Admin</div>
+        <div class="text-xs text-white/70">Strategy • Discipline • Growth</div>
+      </div>
+    </div>
+
+    <nav class="flex-1 space-y-1">
+      <a href="dashboard.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♜</span><span class="font-medium">Dashboard</span>
+      </a>
+      <a href="coaches.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 transition">
+        <span class="text-lg">♞</span><span class="font-semibold">Manage Coaches</span>
+      </a>
+      <a href="students.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♙</span><span class="font-medium">Manage Students</span>
+      </a>
+      <a href="fees.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♛</span><span class="font-medium">Fees Collection</span>
+      </a>
+      <a href="Aattendance.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♝</span><span class="font-medium">Attendance</span>
+      </a>
+      <a href="whatsapp.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♚</span><span class="font-medium">WhatsApp Reminder</span>
+      </a>
+      <a href="payroll.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♖</span><span class="font-medium">Payroll</span>
+      </a>
+      <a href="reports.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♗</span><span class="font-medium">Reports</span>
+      </a>
+      <a href="settings.html" class="group flex items-center gap-3 py-2.5 px-4 rounded-xl hover:bg-white/10 transition">
+        <span class="text-lg">♘</span><span class="font-medium">Settings</span>
+      </a>
+    </nav>
+
+    <button onclick="logout()"
+      class="mt-6 w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 py-2.5 px-4 rounded-xl transition">
+      <span class="text-base">⟵</span><span class="font-semibold">Logout</span>
+    </button>
+  </aside>
+
+  <!-- MAIN SHELL -->
+  <div class="flex-1 flex flex-col">
+    <header class="sticky top-0 z-10 bg-white/80 backdrop-blur border-b border-emerald-100">
+      <div class="px-6 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <img src="images/logo.jpg" class="w-12 h-12 rounded-xl object-cover ring-1 ring-emerald-100" alt="Logo">
+          <div>
+            <h1 class="text-xl md:text-2xl font-extrabold text-[#166534] tracking-tight">
+              Gurukul Chess Academy Admin Panel
+            </h1>
+            <p class="text-xs md:text-sm text-gray-600 flex items-center gap-2">
+              <span class="text-[#166534]">♟</span>
+              Intelligence • Strategy • Professional Management
+              <span class="text-[#166534]">♞</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="p-6 lg:p-8 flex-1">
+      <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Manage Coaches</h1>
+      <p class="text-sm text-gray-600 mb-6">
+        Add, edit, and remove academy coaches.
+      </p>
+
+      <!-- ADD COACH -->
+      <div class="card-hover bg-white/90 p-6 rounded-2xl shadow-sm border border-emerald-100 mb-8">
+        <h3 class="font-semibold mb-4">Add Coach</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input id="name" class="border p-2 rounded" placeholder="Coach Name">
+          <input id="username" class="border p-2 rounded" placeholder="Username">
+          <input id="password" type="password" class="border p-2 rounded" placeholder="Password">
+        </div>
+
+        <button onclick="saveCoach()" class="mt-4 bg-[#166534] text-white px-4 py-2 rounded-xl hover:bg-[#14502a] transition font-medium">
+          Save Coach
+        </button>
+      </div>
+
+      <!-- COACH LIST -->
+      <div class="card-hover bg-white/90 p-6 rounded-2xl shadow-sm border border-emerald-100">
+        <h3 class="font-semibold mb-4">Coaches List</h3>
+
+        <table class="w-full border rounded-xl overflow-hidden">
+          <thead class="bg-emerald-50">
+            <tr>
+              <th class="p-2 text-left">Name</th>
+              <th class="p-2">Username</th>
+              <th class="p-2 text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="coachTable"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+
+async function saveCoach() {
+  const name = document.getElementById("name").value;
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  if (!name || !username) {
+    alert("Name and Username required");
+    return;
+  }
+
+  let url = "http://localhost:5000/api/teachers";
+  let method = "POST";
+
+  if (editId) {
+    url = `http://localhost:5000/api/teachers/${editId}`;
+    method = "PUT";
+  }
+
+  const res = await fetch(url, {
+    method: method,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, username, password })
+  });
+
+  const data = await res.json();
+  alert(data.message || "Success");
+
+  // Reset
+  editId = null;
+  document.getElementById("name").value = "";
+  document.getElementById("username").value = "";
+  document.getElementById("password").value = "";
+
+  document.querySelector("button[onclick='saveCoach()']").innerText = "Save Coach";
+
+  loadCoaches();
+}
+
+async function deleteCoach(id) {
+  const confirmDelete = confirm("Are you sure you want to delete this coach?");
+  if (!confirmDelete) return;
+
+  const res = await fetch(`http://localhost:5000/api/teachers/${id}`, {
+    method: "DELETE"
+  });
+
+  const data = await res.json();
+  alert(data.message || "Successfully Deleted");
+  loadCoaches();
+}
+let editId = null;
+
+async function loadCoaches() {
+  const res = await fetch("http://localhost:5000/api/teachers");
+  const data = await res.json();
+
+  const table = document.getElementById("coachTable");
+  table.innerHTML = "";
+
+  data.forEach(c => {
+  table.innerHTML += `
+    <tr class="border-t">
+      <td class="p-2">${c.name}</td>
+      <td class="p-2 text-center">${c.username}</td><td class="p-2 text-center space-x-3">
+  <span onclick="editCoach('${c._id}','${c.name}','${c.username}')"
+    class="text-blue-600 font-semibold cursor-pointer hover:underline">
+    Edit
+  </span>
+
+  <span onclick="deleteCoach('${c._id}')"
+    class="text-red-600 font-semibold cursor-pointer hover:underline">
+    Delete
+  </span>
+</td>
+
+    </tr>
+  `;
+});
+
+}
+function editCoach(id, name, username) {
+  document.getElementById("name").value = name;
+  document.getElementById("username").value = username;
+  document.getElementById("password").value = "";
+
+  editId = id;
+
+  // Change button text
+  document.querySelector("button[onclick='saveCoach()']").innerText = "Update Coach";
+}
+
+
+function logout() {
+  location.href = "admin-login.html";
+}
+
+loadCoaches();
+
+</script>
+
+</body>
+</html>

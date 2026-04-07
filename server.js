@@ -210,6 +210,11 @@ app.use(cors());
 app.use(express.json()); 
 app.use(express.static("public"));
 
+// 👇 ADD THIS HERE
+app.get("/", (req, res) => {
+  res.send("Server is running 🚀");
+});
+
 
 
 // ================= ADD TEACHER =================
@@ -1241,6 +1246,6 @@ app.delete("/api/payslips/:id", async (req, res) => {
 
 
 // ----------------- START SERVER -----------------
-app.listen(5000, () => {
-  console.log(" Server running on port 5000");
+app.listen(5001, () => {
+  console.log(" Server running on port 5001");
 });

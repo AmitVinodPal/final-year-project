@@ -618,6 +618,55 @@ app.delete('/api/sessions/:id', async (req, res) => {
 
 // ----------------- ROUTES -----------------
 // SAVE FEES
+// app.post("/api/fees/save", async (req, res) => {
+//   try {
+//     const {
+//       studentId,
+//       branch,
+//       feeDate,
+//       totalFee,
+//       paidAmount,
+//       paymentMode
+//     } = req.body;
+
+//     if (!studentId) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Student ID is required"
+//       });
+//     }
+
+//     // 🔥 Convert properly to Number
+//     const total = Number(totalFee) || 0;
+//     const paid = Number(paidAmount) || 0;
+
+//     const dueAmount = total - paid;
+
+//     let status = "Unpaid";
+//     if (dueAmount <= 0) {
+//       status = "Paid";
+//     } else if (paid > 0) {
+//       status = "Partial";
+//     }
+
+//     await Fee.create({
+//       studentId,
+//       branch,
+//       feeDate,
+//       totalFee: total,
+//       paidAmount: paid,
+//       dueAmount,
+//       status,
+//       paymentMode
+//     });
+
+//     res.json({ success: true });
+
+//   } catch (error) {
+//     console.error("SAVE FEE ERROR:", error);
+//     res.status(500).json({ success: false });
+//   }
+// });
 app.post("/api/fees/save", async (req, res) => {
   try {
     const {
@@ -636,19 +685,36 @@ app.post("/api/fees/save", async (req, res) => {
       });
     }
 
-    // 🔥 Convert properly to Number
     const total = Number(totalFee) || 0;
     const paid = Number(paidAmount) || 0;
 
-    const dueAmount = total - paid;
+    // 🔥 1. GET PREVIOUS PAYMENTS
+    const previousFees = await Fee.find({ studentId });
 
+    let totalPaidSoFar = 0;
+
+    previousFees.forEach(f => {
+      totalPaidSoFar += f.paidAmount;
+    });
+
+    // 🔥 2. ADD CURRENT PAYMENT
+    const newTotalPaid = totalPaidSoFar + paid;
+
+    // 🔥 3. CALCULATE DUE
+    let dueAmount = total - newTotalPaid;
+
+    if (dueAmount < 0) dueAmount = 0;
+
+    // 🔥 4. STATUS
     let status = "Unpaid";
-    if (dueAmount <= 0) {
+
+    if (dueAmount === 0) {
       status = "Paid";
-    } else if (paid > 0) {
+    } else if (newTotalPaid > 0) {
       status = "Partial";
     }
 
+    // 🔥 5. SAVE ENTRY
     await Fee.create({
       studentId,
       branch,
@@ -667,7 +733,6 @@ app.post("/api/fees/save", async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
-
 
 
 // GET ALL FEES
@@ -1039,20 +1104,49 @@ app.get("/api/download-payslip/:id", async (req, res) => {
 app.get("/api/dashboard", async (req, res) => {
   try {
     const totalCoaches = await Teacher.countDocuments();
+
     const [currentStudents, passedStudents] = await Promise.all([
       Student.countDocuments({
-        $or: [{ status: "Current" }, { status: { $exists: false } }, { status: null }, { status: "" }]
+        $or: [
+          { status: "Current" },
+          { status: { $exists: false } },
+          { status: null },
+          { status: "" }
+        ]
       }),
       Student.countDocuments({ status: "Passed" })
     ]);
+
     const totalStudents = currentStudents + passedStudents;
 
+    // 🔥 GROUP BY STUDENT → TAKE LATEST RECORD
     const feesAgg = await Fee.aggregate([
-      { $group: { _id: null, totalPaid: { $sum: "$paidAmount" }, totalDue: { $sum: "$dueAmount" } } }
+      {
+        $sort: { feeDate: -1 } // latest first
+      },
+      {
+        $group: {
+          _id: "$studentId",
+          latestDue: { $first: "$dueAmount" },
+          totalPaid: { $sum: "$paidAmount" }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalDue: { $sum: "$latestDue" },
+          totalPaid: { $sum: "$totalPaid" }
+        }
+      }
     ]);
 
     const expensesAgg = await Payslip.aggregate([
-      { $group: { _id: null, totalAmount: { $sum: "$totalAmount" } } }
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: "$totalAmount" }
+        }
+      }
     ]);
 
     res.json({
@@ -1067,9 +1161,10 @@ app.get("/api/dashboard", async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false });
   }
 });
+
 
 // DELETE COACH
 app.delete("/api/teachers/:id", async (req, res) => {
@@ -1223,12 +1318,23 @@ app.get("/api/reports/monthly", async (req, res) => {
 
     const total_students = await Student.countDocuments();
 
+    // 🔥 FIXED FEES AGGREGATION
     const feesAgg = await Fee.aggregate([
+      {
+        $sort: { feeDate: -1 } // latest first
+      },
+      {
+        $group: {
+          _id: "$studentId",
+          latestDue: { $first: "$dueAmount" },
+          totalPaid: { $sum: "$paidAmount" }
+        }
+      },
       {
         $group: {
           _id: null,
-          totalPaid: { $sum: "$paidAmount" },
-          totalDue: { $sum: "$dueAmount" }
+          totalDue: { $sum: "$latestDue" },
+          totalPaid: { $sum: "$totalPaid" }
         }
       }
     ]);

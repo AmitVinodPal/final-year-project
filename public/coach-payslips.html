@@ -81,7 +81,7 @@ async function loadPayslips() {
 
   try {
 
-    const response = await fetch(`http://localhost:5000/api/coach-payslips/${teacherId}`, {
+    const response = await fetch(`http://localhost:5001/api/coach-payslips/${teacherId}`, {
 
       cache: "no-store"
     });
@@ -145,7 +145,7 @@ async function deleteSlip(id) {
 
   try {
 
-    const res = await fetch(`http://localhost:5000/api/payslips/${id}`, {
+    const res = await fetch(`http://localhost:5001/api/payslips/${id}`, {
       method: "DELETE"
     });
 

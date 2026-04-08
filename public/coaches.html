@@ -149,11 +149,11 @@ async function saveCoach() {
     return;
   }
 
-  let url = "http://localhost:5000/api/teachers";
+  let url = "http://localhost:5001/api/teachers";
   let method = "POST";
 
   if (editId) {
-    url = `http://localhost:5000/api/teachers/${editId}`;
+    url = `http://localhost:5001/api/teachers/${editId}`;
     method = "PUT";
   }
 
@@ -181,7 +181,7 @@ async function deleteCoach(id) {
   const confirmDelete = confirm("Are you sure you want to delete this coach?");
   if (!confirmDelete) return;
 
-  const res = await fetch(`http://localhost:5000/api/teachers/${id}`, {
+  const res = await fetch(`http://localhost:5001/api/teachers/${id}`, {
     method: "DELETE"
   });
 
@@ -192,7 +192,7 @@ async function deleteCoach(id) {
 let editId = null;
 
 async function loadCoaches() {
-  const res = await fetch("http://localhost:5000/api/teachers");
+  const res = await fetch("http://localhost:5001/api/teachers");
   const data = await res.json();
 
   const table = document.getElementById("coachTable");

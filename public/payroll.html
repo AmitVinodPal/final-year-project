@@ -5,6 +5,7 @@
 <title>Coach Payroll</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <style>
   .chessboard-bg {
     background-color: #ecfdf5; /* very light green */
@@ -117,7 +118,7 @@
 
           <button onclick="generateMonthlySlip()"
             class="bg-[#166534] text-white px-4 py-2 rounded-xl hover:bg-[#14502a] transition font-medium">
-            Generate Monthly Slip
+            Pay for Month
           </button>
         </div>
       </div>
@@ -166,7 +167,7 @@
         <button onclick="generatePayslip()"
           class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-xl hidden"
           id="generateBtn">
-          Generate Payslip
+          Pay
         </button>
       </div>
     </main>
@@ -234,42 +235,135 @@ function calculateTotal() {
 
   document.getElementById("generateBtn").classList.remove("hidden");
 }
+// async function generatePayslip() {
+
+//   const name = document.getElementById("calcName").value;
+//   const hours = Number(document.getElementById("calcHours").value);
+//   const rate = Number(document.getElementById("calcRate").value);
+//   const total = Number(document.getElementById("calcTotal").value);
+//   const month = document.getElementById("filterMonth").value;
+
+//   if (!name || !month || !rate) {
+//     return alert("Fill all details");
+//   }
+
+//   // ⚠️ You must store coachId also when selecting
+//   const coachId = window.selectedCoachId;
+//   const totalSessions = window.selectedTotalSessions;
+
+//   const res = await fetch("/api/generate-payslip", {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({
+//       coachId,
+//       coachName: name,
+//       month,
+//       totalSessions,
+//       totalHours: hours,
+//       ratePerHour: rate,
+//       totalAmount: total
+//     })
+//   });
+
+//   const result = await res.json();
+
+//   alert("Payslip Saved Successfully ");
+// }
+
+
 async function generatePayslip() {
 
   const name = document.getElementById("calcName").value;
-  const hours = Number(document.getElementById("calcHours").value);
-  const rate = Number(document.getElementById("calcRate").value);
   const total = Number(document.getElementById("calcTotal").value);
-  const month = document.getElementById("filterMonth").value;
 
-  if (!name || !month || !rate) {
-    return alert("Fill all details");
+  if (!total) {
+    return alert("Amount missing");
   }
 
-  // ⚠️ You must store coachId also when selecting
-  const coachId = window.selectedCoachId;
-  const totalSessions = window.selectedTotalSessions;
+  const options = {
+    key: "rzp_test_SaUP39unIcogw4",
+    amount: total * 100,
+    currency: "INR",
+    name: "Gurukul Chess Academy",
+    description: "Coach Payment",
 
-  const res = await fetch("/api/generate-payslip", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      coachId,
+    method: {
+      upi: true,
+      card: true,
+      netbanking: true,
+      wallet: true
+    },
+
+    handler: async function (response) {
+
+      const paymentData = {
+        coachId: window.selectedCoachId,
+        coachName: name,
+        amount: total,
+        paymentId: response.razorpay_payment_id,
+        status: "SUCCESS",
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString()
+      };
+
+      // ✅ Show popup
+      alert(`
+Payment Successful ✅
+
+Name: ${name}
+Amount: ₹${total}
+Payment ID: ${paymentData.paymentId}
+Date: ${paymentData.date}
+Time: ${paymentData.time}
+      `);
+
+      // ✅ Save to MongoDB
+      await fetch("http://localhost:5001/api/save-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(paymentData)
+      });
+    }
+  };
+
+  const rzp = new Razorpay(options);
+
+  // ❌ Handle FAILED payment
+  rzp.on('payment.failed', async function (response) {
+
+    const failData = {
+      coachId: window.selectedCoachId,
       coachName: name,
-      month,
-      totalSessions,
-      totalHours: hours,
-      ratePerHour: rate,
-      totalAmount: total
-    })
+      amount: total,
+      paymentId: response.error.metadata.payment_id,
+      status: "FAILED",
+      reason: response.error.description,
+      date: new Date().toLocaleDateString(),
+      time: new Date().toLocaleTimeString()
+    };
+
+    alert(`
+Payment Failed ❌
+
+Reason: ${failData.reason}
+Amount: ₹${total}
+Date: ${failData.date}
+Time: ${failData.time}
+    `);
+
+    await fetch("http://localhost:5001/api/save-payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(failData)
+    });
   });
 
-  const result = await res.json();
-
-  alert("Payslip Saved Successfully ");
+  rzp.open();
 }
-
-
 
 function openSlip(name, date) {
   window.open(`slip.html?name=${name}&date=${date}`, "_blank");

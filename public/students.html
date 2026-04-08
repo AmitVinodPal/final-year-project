@@ -213,7 +213,7 @@ async function addStudent() {
 
   try {
 
-    const res = await fetch("http://localhost:5000/api/admin/add-student", {
+    const res = await fetch("http://localhost:5001/api/admin/add-student", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, phone, branch, status })
@@ -246,7 +246,7 @@ async function loadStudents() {
   try {
 
     const statusParam = selectedStatusFilter ? `?status=${encodeURIComponent(selectedStatusFilter)}` : "";
-    const res = await fetch(`http://localhost:5000/api/students${statusParam}`);
+    const res = await fetch(`http://localhost:5001/api/students${statusParam}`);
     const data = await res.json();
 
     const tableBody = document.getElementById("studentsTable");
@@ -326,7 +326,7 @@ async function deleteStudent(id) {
 
   try {
 
-    await fetch(`http://localhost:5000/api/admin/delete-student/${id}`, {
+    await fetch(`http://localhost:5001/api/admin/delete-student/${id}`, {
       method: "DELETE"
     });
 
@@ -389,7 +389,7 @@ async function saveEdit() {
 
   try {
 
-    const res = await fetch(`http://localhost:5000/api/admin/edit-student/${editId}`, {
+    const res = await fetch(`http://localhost:5001/api/admin/edit-student/${editId}`, {
 
       method: "PUT",
       headers: { "Content-Type": "application/json" },

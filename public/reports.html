@@ -174,7 +174,7 @@ function showReport(id) {
 
 // ---------------- FETCH ATTENDANCE ----------------
 async function loadAttendance() {
-  const res = await fetch('http://localhost:5000/api/reports/attendance');
+  const res = await fetch('http://localhost:5001/api/reports/attendance');
   const data = await res.json();
 
   const table = document.querySelector('#attendanceTable');
@@ -202,7 +202,7 @@ async function loadAttendance() {
 
 // ---------------- FETCH FEES ----------------
 async function loadFees() {
-  const res = await fetch('http://localhost:5000/api/reports/fees');
+  const res = await fetch('http://localhost:5001/api/reports/fees');
   const data = await res.json();
 
   const table = document.querySelector('#feesTable');
@@ -234,7 +234,7 @@ async function loadFees() {
 
 // ---------------- FETCH COACH PAYMENT ----------------
 async function loadCoach() {
-  const res = await fetch('http://localhost:5000/api/reports/coach');
+  const res = await fetch('http://localhost:5001/api/reports/coach');
   const data = await res.json();
 
   const table = document.querySelector('#coachTable');
@@ -264,7 +264,7 @@ async function loadCoach() {
 
 // ---------------- FETCH MONTHLY SUMMARY ----------------
 async function loadMonthly() {
-  const res = await fetch('http://localhost:5000/api/reports/monthly');
+  const res = await fetch('http://localhost:5001/api/reports/monthly');
   const data = await res.json();
 
   const table = document.querySelector('#monthlyTable');

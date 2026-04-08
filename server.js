@@ -17,6 +17,20 @@ const app = express();
 connectDB();
 
 // ----------------- SCHEMAS -----------------
+// PAYMENT SCHEMA
+const paymentSchema = new mongoose.Schema({
+  coachId: String,
+  coachName: String,
+  amount: Number,
+  paymentId: String,
+  status: String, // SUCCESS / FAILED
+  reason: String,
+  date: String,
+  time: String,
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Payment = mongoose.model("Payment", paymentSchema);
 
 // STUDENT
 
@@ -1187,6 +1201,19 @@ app.get("/api/reports/coach", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json([]);
+  }
+});
+
+//------------ PAYMENT -----------------//
+
+app.post("/api/save-payment", async (req, res) => {
+  try {
+    const saved = await Payment.create(req.body);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.log("ERROR ❌", err);
+    res.status(500).json({ error: "Failed to save payment" });
   }
 });
 

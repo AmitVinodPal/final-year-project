@@ -137,7 +137,7 @@ function openBranchLogin(branchName) {
     return;
   }
 
-  fetch("http://localhost:5000/api/teacher/select-branch", {
+  fetch("http://localhost:5001/api/teacher/select-branch", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ teacherName, branch: branchName })

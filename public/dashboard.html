@@ -218,7 +218,7 @@ async function loadDashboard() {
 
   try {
 
-    const res = await fetch("http://localhost:5000/api/dashboard");
+    const res = await fetch("http://localhost:5001/api/dashboard");
     const data = await res.json();
 
     document.getElementById("totalCoaches").innerText = data.totalCoaches ?? 0;

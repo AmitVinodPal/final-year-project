@@ -1140,14 +1140,17 @@ app.get("/api/dashboard", async (req, res) => {
       }
     ]);
 
-    const expensesAgg = await Payslip.aggregate([
-      {
-        $group: {
-          _id: null,
-          totalAmount: { $sum: "$totalAmount" }
-        }
-      }
-    ]);
+    const expensesAgg = await Payment.aggregate([
+  {
+    $match: { status: "SUCCESS" }
+  },
+  {
+    $group: {
+      _id: null,
+      totalAmount: { $sum: "$amount" }
+    }
+  }
+]);
 
     res.json({
       totalCoaches,
@@ -1280,15 +1283,15 @@ app.get("/api/reports/fees", async (req, res) => {
 // ================= COACH REPORT =================
 app.get("/api/reports/coach", async (req, res) => {
   try {
+    const payments = await Payment.find({ status: "SUCCESS" });
 
-    const payslips = await Payslip.find();
-
-    const report = payslips.map(p => ({
+    const report = payments.map(p => ({
       coach_name: p.coachName,
-      branch: "N/A",
-      month: p.month,
-      amount: p.totalAmount,
-      status: "Generated"
+      branch: p.branchName || "N/A",
+      date: p.date,
+      amount: p.amount,
+      paymentId: p.paymentId,
+      status: p.status
     }));
 
     res.json(report);
@@ -1339,20 +1342,23 @@ app.get("/api/reports/monthly", async (req, res) => {
       }
     ]);
 
-    const payslipAgg = await Payslip.aggregate([
-      {
-        $group: {
-          _id: null,
-          totalPayments: { $sum: "$totalAmount" }
-        }
-      }
-    ]);
+    const paymentAgg = await Payment.aggregate([
+  {
+    $match: { status: "SUCCESS" }
+  },
+  {
+    $group: {
+      _id: null,
+      totalPayments: { $sum: "$amount" }
+    }
+  }
+]);
 
     res.json({
       total_students,
       fees_collected: feesAgg[0]?.totalPaid || 0,
       pending_fees: feesAgg[0]?.totalDue || 0,
-      coach_payments: payslipAgg[0]?.totalPayments || 0
+      coach_payments: paymentAgg[0]?.totalPayments || 0
     });
 
   } catch (err) {

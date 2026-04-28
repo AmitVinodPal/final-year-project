@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Level 4: AI Game</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css"/>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.0/chess.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+  <style>
+    body {
+      text-align: center;
+      background: #e6f4ea;
+      font-family: Arial;
+    }
+
+    #board {
+      width: 350px;
+      margin: 20px auto;
+    }
+
+    button {
+      padding: 10px;
+      margin: 5px;
+      background: green;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Level 4: Play vs AI 🤖</h2>
+
+<div id="board"></div>
+
+<h3 id="msg">Your move ♟</h3>
+
+<button onclick="resetGame()">🔄 Restart</button>
+
+<script>
+var game = new Chess();
+
+var pieceTheme = 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png';
+
+var board = Chessboard('board',{
+  draggable:true,
+  position:'start',
+  pieceTheme: pieceTheme,
+  onDrop: handleMove
+});
+
+// ---------------- USER MOVE ----------------
+function handleMove(source, target) {
+  var move = game.move({
+    from: source,
+    to: target,
+    promotion: 'q'
+  });
+
+  if (!move) return 'snapback';
+
+  board.position(game.fen());
+  checkGameStatus();
+
+  if (!game.game_over()) {
+    setTimeout(aiMove, 400);
+  }
+}
+
+// ---------------- PIECE VALUES ----------------
+const pieceValue = {
+  p: 1,
+  n: 3,
+  b: 3,
+  r: 5,
+  q: 9,
+  k: 100
+};
+
+// ---------------- BOARD EVALUATION ----------------
+function evaluateBoard(g) {
+  let total = 0;
+
+  g.board().forEach(row => {
+    row.forEach(piece => {
+      if (piece) {
+        let value = pieceValue[piece.type];
+        total += piece.color === 'w' ? value : -value;
+      }
+    });
+  });
+
+  return total;
+}
+
+// ---------------- MINIMAX (FIXED) ----------------
+function minimax(depth, game, isMaximizing) {
+  if (depth === 0) return evaluateBoard(game);
+
+  let moves = game.moves();
+
+  if (isMaximizing) {
+    let maxEval = -Infinity;
+
+    for (let move of moves) {
+      game.move(move);
+      let score = minimax(depth - 1, game, false);
+      game.undo();
+      maxEval = Math.max(maxEval, score);
+    }
+
+    return maxEval;
+  } else {
+    let minEval = Infinity;
+
+    for (let move of moves) {
+      game.move(move);
+      let score = minimax(depth - 1, game, true);
+      game.undo();
+      minEval = Math.min(minEval, score);
+    }
+
+    return minEval;
+  }
+}
+
+// ---------------- AI MOVE ----------------
+function aiMove() {
+  let moves = game.moves();
+  let bestMove = null;
+  let bestValue = Infinity;
+
+  for (let move of moves) {
+    game.move(move);
+    let value = minimax(2, game, true);
+    game.undo();
+
+    if (value < bestValue) {
+      bestValue = value;
+      bestMove = move;
+    }
+  }
+
+  game.move(bestMove);
+  board.position(game.fen());
+
+  checkGameStatus();
+}
+
+// ---------------- GAME STATUS ----------------
+function checkGameStatus() {
+  if (game.in_checkmate()) {
+    if (game.turn() === 'b') {
+      setMsg("🎉 You WIN!");
+    } else {
+      setMsg("❌ AI Wins!");
+    }
+  } else if (game.in_check()) {
+    setMsg("⚠️ Check!");
+  }
+}
+
+// ---------------- RESET ----------------
+function resetGame() {
+  game.reset();
+  board.start();
+  setMsg("Game restarted 🔄");
+}
+
+function setMsg(msg) {
+  document.getElementById("msg").innerText = msg;
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Level 3 Puzzle</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css"/>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.0/chess.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+  <style>
+    body {
+      text-align: center;
+      background: #e6f4ea;
+      font-family: Arial;
+    }
+
+    #board {
+      width: 350px;
+      margin: 20px auto;
+    }
+
+    .hint {
+      background: orange !important;
+    }
+
+    button {
+      padding: 10px;
+      margin: 5px;
+      background: green;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Level 3: Mate in 1 🎯</h2>
+
+<div id="board"></div>
+
+<h3 id="msg">Find checkmate in 1 move</h3>
+
+<button onclick="showHint()">💡 Hint</button>
+<button onclick="resetGame()">🔄 Restart</button>
+
+<script>
+const startFen = "6k1/5ppp/8/8/8/8/5PPP/6KQ w - - 0 1";
+
+var game = new Chess(startFen);
+
+var pieceTheme = 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png';
+
+var board = Chessboard('board', {
+  draggable: true,
+  position: startFen,
+  pieceTheme: pieceTheme,
+  onDrop: handleMove
+});
+
+// HANDLE MOVE
+function handleMove(source, target) {
+  var move = game.move({
+    from: source,
+    to: target,
+    promotion: 'q'
+  });
+
+  if (!move) return 'snapback';
+
+  board.position(game.fen());
+
+  // CHECK RESULT
+  if (game.in_checkmate()) {
+    document.getElementById("msg").innerText = "🎉 Correct! You solved it!";
+  } else {
+    document.getElementById("msg").innerText = "❌ Wrong move! Try again";
+    
+    // RESET after wrong move
+    setTimeout(() => {
+      resetGame();
+    }, 1000);
+  }
+}
+
+// RESET
+function resetGame() {
+  game = new Chess(startFen);
+  board.position(startFen);
+  clearHints();
+  document.getElementById("msg").innerText = "Try again 🎯";
+}
+
+// 💡 HINT SYSTEM (SHOW CORRECT MOVE)
+function showHint() {
+  clearHints();
+
+  var moves = game.moves({ verbose: true });
+
+  for (let move of moves) {
+    var testGame = new Chess(game.fen());
+    testGame.move(move);
+
+    if (testGame.in_checkmate()) {
+      $('[data-square="' + move.from + '"]').addClass('hint');
+      $('[data-square="' + move.to + '"]').addClass('hint');
+
+      document.getElementById("msg").innerText =
+        "💡 Try: " + move.from + " → " + move.to;
+
+      break;
+    }
+  }
+}
+
+// CLEAR HINTS
+function clearHints() {
+  $('.square-55d63').removeClass('hint');
+}
+</script>
+
+</body>
+</html>

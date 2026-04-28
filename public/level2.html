@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Level 2</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css"/>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.0/chess.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+  <style>
+    body {
+      text-align: center;
+      background: #e6f4ea;
+      font-family: Arial;
+    }
+
+    #board {
+      width: 350px;
+      margin: 20px auto;
+    }
+
+    .captured {
+      margin: 10px;
+      min-height: 40px;
+    }
+
+    img.captured-piece {
+      width: 30px;
+      margin: 2px;
+    }
+
+    .highlight { background: yellow !important; }
+    .hint { background: orange !important; }
+
+    button {
+      padding: 10px;
+      margin: 5px;
+      background: green;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Level 2: Capture Challenge</h2>
+<h3>Goal: Capture 3 pieces 🎯</h3>
+
+<div>
+  <h3>Captured Black Pieces</h3>
+  <div id="captured-black" class="captured"></div>
+</div>
+
+<div id="board"></div>
+
+<div>
+  <h3>Captured White Pieces</h3>
+  <div id="captured-white" class="captured"></div>
+</div>
+
+<h3 id="msg">Start capturing ⚔️</h3>
+<h3>Captured Count: <span id="count">0</span> / 3</h3>
+
+<button onclick="showHint()">💡 Hint</button>
+<button onclick="resetGame()">🔄 Restart</button>
+
+<script>
+var game = new Chess();
+var captureCount = 0;
+var goal = 3;
+
+var pieceTheme = 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png';
+
+var board = Chessboard('board', {
+  draggable: true,
+  position: 'start',
+  pieceTheme: pieceTheme,
+  onDrop: handleMove,
+  onMouseoverSquare: highlightMoves,
+  onMouseoutSquare: clearHighlights
+});
+
+// HANDLE MOVE
+function handleMove(source, target) {
+  var move = game.move({
+    from: source,
+    to: target,
+    promotion: 'q'
+  });
+
+  if (!move) return 'snapback';
+
+  board.position(game.fen());
+
+  // CAPTURE LOGIC
+  if (move.captured) {
+    captureCount++;
+    document.getElementById("count").innerText = captureCount;
+
+    showCapturedPiece(move);
+
+    document.getElementById("msg").innerText = "🔥 Nice capture!";
+
+    if (captureCount >= goal) {
+      document.getElementById("msg").innerText = "🎉 You completed Level 2!";
+    }
+
+  } else {
+    document.getElementById("msg").innerText = "Try capturing a piece ⚔️";
+  }
+}
+
+// SHOW CAPTURED PIECE
+function showCapturedPiece(move) {
+  var capturedColor = move.color === 'w' ? 'b' : 'w';
+  var pieceType = move.captured.toUpperCase();
+
+  var img = document.createElement("img");
+  img.className = "captured-piece";
+
+  img.src = pieceTheme.replace('{piece}', capturedColor + pieceType);
+
+  if (capturedColor === 'b') {
+    document.getElementById("captured-black").appendChild(img);
+  } else {
+    document.getElementById("captured-white").appendChild(img);
+  }
+}
+
+// RESET GAME
+function resetGame() {
+  game.reset();
+  board.start();
+  captureCount = 0;
+
+  document.getElementById("count").innerText = "0";
+  document.getElementById("captured-black").innerHTML = "";
+  document.getElementById("captured-white").innerHTML = "";
+
+  clearHighlights();
+
+  document.getElementById("msg").innerText = "Game restarted 🔄";
+}
+
+// HINT
+function showHint() {
+  clearHighlights();
+
+  var moves = game.moves({ verbose: true });
+  if (!moves.length) return;
+
+  var move = moves[Math.floor(Math.random() * moves.length)];
+
+  $('[data-square="' + move.from + '"]').addClass('hint');
+  $('[data-square="' + move.to + '"]').addClass('hint');
+
+  document.getElementById("msg").innerText =
+    "💡 Try: " + move.from + " → " + move.to;
+}
+
+// HIGHLIGHT MOVES
+function highlightMoves(square) {
+  var moves = game.moves({ square: square, verbose: true });
+
+  moves.forEach(move => {
+    $('[data-square="' + move.to + '"]').addClass('highlight');
+  });
+}
+
+// CLEAR
+function clearHighlights() {
+  $('.square-55d63').removeClass('highlight hint');
+}
+</script>
+
+</body>
+</html>

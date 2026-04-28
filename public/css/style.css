@@ -1,0 +1,29 @@
+body {
+  text-align: center;
+  background: #e6f4ea;
+  font-family: Arial;
+}
+
+#board {
+  width: 350px;
+  margin: 20px auto;
+}
+
+.btn, a {
+  display: inline-block;
+  padding: 10px 15px;
+  margin: 8px;
+  background: green;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.highlight {
+  background: yellow !important;
+}
+
+.hint {
+  background: orange !important;
+}

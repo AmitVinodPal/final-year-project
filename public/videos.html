@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ChessTube</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+body { margin:0; font-family:Arial; background:#0f0f0f; color:white; }
+
+header {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 20px; background:#181818;
+}
+
+.logo { font-size:20px; color:#2E8B57; font-weight:bold; }
+
+/* SEARCH */
+.search-bar { position:relative; width:50%; display:flex; }
+.search-bar input { flex:1; padding:10px; border:none; }
+.search-bar button { padding:10px; background:#2E8B57; border:none; color:white; }
+
+#suggestions {
+  position:absolute; top:40px; width:100%;
+  background:#222; border-radius:5px;
+  max-height:150px; overflow-y:auto;
+}
+
+#suggestions div { padding:8px; cursor:pointer; }
+#suggestions div:hover { background:#333; }
+
+/* CAROUSEL */
+.carousel {
+  display:flex;
+  gap:12px;
+  padding:10px 15px;
+  overflow-x:auto;
+}
+
+/* 🔥 PREMIUM BUTTON */
+.carousel button {
+  position: relative;
+  background: linear-gradient(135deg, #2E8B57, #3cb371);
+  border: none;
+  padding: 10px 18px;
+  color: white;
+  border-radius: 30px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  overflow: hidden;
+}
+
+/* HOVER */
+.carousel button:hover {
+  transform: translateY(-3px) scale(1.08);
+  box-shadow: 0 6px 18px rgba(60, 179, 113, 0.6);
+}
+
+/* CLICK */
+.carousel button:active {
+  transform: scale(0.95);
+}
+
+/* SHINE EFFECT */
+.carousel button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: skewX(-25deg);
+}
+
+.carousel button:hover::before {
+  left: 130%;
+  transition: 0.7s;
+}
+
+/* VIDEO GRID */
+.video-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap:20px;
+  padding:20px;
+}
+
+.card {
+  background:#181818;
+  border-radius:10px;
+  padding:15px;
+}
+
+.card button {
+  background:#2E8B57;
+  border:none;
+  padding:8px;
+  color:white;
+}
+
+/* PLAYER */
+.player { padding:20px; }
+iframe { width:100%; height:500px; }
+
+.back {
+  padding:10px;
+  background:#2E8B57;
+  border:none;
+  margin-bottom:10px;
+}
+
+.message {
+  text-align:center;
+  padding:40px;
+  color:#aaa;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">♟ ChessTube</div>
+
+  <div class="search-bar">
+    <input id="searchInput" placeholder="Search player..." oninput="showSuggestions()">
+    <button onclick="searchVideos()">🔍</button>
+    <div id="suggestions"></div>
+  </div>
+</header>
+
+<!-- 🧠 TOP PLAYERS -->
+<h3 style="padding-left:15px;">🧠 Top Players</h3>
+<div class="carousel">
+  <button onclick="quickSearch('DrNykterstein')">♟ Magnus</button>
+  <button onclick="quickSearch('Hikaru')">⚡ Hikaru</button>
+  <button onclick="quickSearch('FabianoCaruana')">🔥 Fabiano</button>
+  <button onclick="quickSearch('IanNepomniachtchi')">⚔ Nepo</button>
+  <button onclick="quickSearch('DingLiren')">🏆 Ding</button>
+</div>
+
+<!-- 🇮🇳 INDIAN -->
+<h3 style="padding-left:15px;">🇮🇳 Indian Players</h3>
+<div class="carousel">
+  <button onclick="quickSearch('Praggnanandhaa')">🚀 Pragg</button>
+  <button onclick="quickSearch('ArjunErigaisi')">🇮🇳 Arjun</button>
+  <button onclick="quickSearch('ViditGupta')">♜ Vidit</button>
+  <button onclick="quickSearch('NihalSarin')">🧠 Nihal</button>
+</div>
+
+<!-- 🎥 YOUTUBERS -->
+<h3 style="padding-left:15px;">🎥 YouTubers</h3>
+<div class="carousel">
+  <button onclick="quickSearch('GothamChess')">🎥 Levy</button>
+  <button onclick="quickSearch('EricRosen')">😄 Rosen</button>
+  <button onclick="quickSearch('ChessNetwork')">📺 ChessNet</button>
+</div>
+
+<div id="content" class="video-grid"></div>
+
+<script>
+
+let lastGames = [];
+
+function showSuggestions(){
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const box = document.getElementById("suggestions");
+  box.innerHTML = "";
+
+  if(!input) return;
+
+  const players = [
+"DrNykterstein","Hikaru","AnishGiri","FabianoCaruana","IanNepomniachtchi",
+"DingLiren","AlirezaFirouzja","LevonAronian","WesleySo","MaximeVachierLagrave",
+"ShakhriyarMamedyarov","SergeyKarjakin","PeterSvidler","TeimourRadjabov",
+"JanKrzysztofDuda","RichardRapport","BaadurJobava","GawainJones","DavidHowell",
+"VincentKeymer","JordenVanForeest","JefferyXiong","SamShankland","HansNiemann",
+"ParhamMaghsoodloo","AlexandraBotez","AndreaBotez","GothamChess","EricRosen",
+"ChessNetwork","DanielNaroditsky","SaintLouisChessClub",
+
+"Praggnanandhaa","ArjunErigaisi","ViditGupta","NihalSarin","RaunakSadhwani",
+"PentalaHarikrishna","KoneruHumpy","HarikaDronavalli","TaniaSachdev",
+"AbhimanyuPuranik","SLNarayanan","MuraliKarthikeyan","SuryaShekharGanguly",
+"BaskaranAdhiban","VishyAnand","RameshbabuPraggnanandhaa",
+
+"JuWenjun","HouYifan","LeiTingjie","KaterynaLagno","AleksandraGoryachkina",
+"NanaDzagnidze","ElisabethPaehtz","AnnaMuzychuk","MariyaMuzychuk",
+
+"ChessExplained","PowerPlayChess","Agadmator","Chess24","Chesscom",
+"GMNaroditsky","IMRosen","IMChessExplained","GMHikaruClips",
+
+"Firouzja","MagnusCarlsen","HikaruNakamura","Anish_Giri","Fabiano_Caruana",
+"Ding_Liren","Nepomniachtchi","Levon_Aronian","Wesley_So","MVL",
+
+"ChessKing","ChessCoach","ChessMaster","ChessWarrior","ChessPro",
+"ChessLegend","ChessHero","ChessGuru","ChessWizard","ChessKnight",
+
+"StockfishFan","ChessEngine","BlitzMaster","BulletKing","RapidPro",
+"EndgameExpert","OpeningMaster","TacticsTrainer","ChessStudent","ChessLearner"
+];
+
+
+  players.filter(p => p.toLowerCase().includes(input))
+    .forEach(name => {
+      const div = document.createElement("div");
+      div.innerText = name;
+      div.onclick = () => {
+        document.getElementById("searchInput").value = name;
+        box.innerHTML = "";
+        searchVideos();
+      };
+      box.appendChild(div);
+    });
+}
+
+function quickSearch(name){
+  document.getElementById("searchInput").value = name;
+  searchVideos();
+}
+
+function searchVideos(){
+  const username = document.getElementById("searchInput").value.trim();
+  const container = document.getElementById("content");
+
+  if(!username){
+    container.innerHTML = `
+      <div class="message">
+        ⚠️ Please enter a player name
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = "<div class='message'>🔍 Searching player...</div>";
+
+  fetch(`https://lichess.org/api/games/user/${username}?max=10`, {
+    headers: { "Accept": "application/x-ndjson" }
+  })
+  .then(res => {
+
+    // 👉 If user not found (important)
+    if(res.status === 404){
+      throw new Error("USER_NOT_FOUND");
+    }
+
+    return res.text();
+  })
+  .then(data => {
+
+    if(!data || data.trim() === ""){
+  container.innerHTML = `
+    <div class="message">
+      ❌ Player not found or no games available <br>
+      👉 Try another player
+    </div>`;
+  return;
+}
+
+    const games = data.split("\n").filter(Boolean).map(JSON.parse);
+    lastGames = games;
+
+    if(games.length === 0){
+      container.innerHTML = `
+        <div class="message">
+          ⚠️ No games available for this player <br>
+          Try another player
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = "";
+
+    games.forEach(g => {
+      const div = document.createElement("div");
+      div.className = "card";
+
+      div.innerHTML = `
+        <h4>${g.players.white?.user?.name} vs ${g.players.black?.user?.name}</h4>
+       <button onclick="openVideo('${g.id}')">▶ Play</button>
+      `;
+
+      container.appendChild(div);
+    });
+
+  })
+  .catch(err => {
+
+    if(err.message === "USER_NOT_FOUND"){
+      container.innerHTML = `
+        <div class="message">
+          ❌ Player not found <br>
+          👉 Please try a different player name
+        </div>`;
+    } else {
+      container.innerHTML = `
+        <div class="message">
+          ⚠️ Error loading data <br>
+          Check connection or try again
+        </div>`;
+    }
+
+  });
+} 
+
+
+function openVideo(id){
+  window.open(`player.html?game=${id}`, "_blank");
+}
+
+function renderBack(){
+  searchVideos();
+}
+
+</script>
+
+</body>
+</html>

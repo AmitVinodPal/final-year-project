@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Chess Video</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin:0;
+  background:black;
+}
+
+iframe {
+  width:100%;
+  height:100vh;
+  border:none;
+}
+
+.back {
+  position:fixed;
+  top:10px;
+  left:10px;
+  z-index:100;
+  background:#2E8B57;
+  color:white;
+  padding:10px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<button class="back" onclick="goBack()">⬅ Back</button>
+
+<iframe id="videoFrame"></iframe>
+
+<script>
+
+// GET GAME ID FROM URL
+const params = new URLSearchParams(window.location.search);
+const gameId = params.get("game");
+
+// LOAD VIDEO
+document.getElementById("videoFrame").src = 
+  `https://lichess.org/embed/${gameId}`;
+
+// BACK BUTTON
+function goBack(){
+  window.close(); // or history.back()
+}
+
+</script>
+
+</body>
+</html>
